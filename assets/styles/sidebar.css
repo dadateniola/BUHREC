@@ -1,0 +1,107 @@
+.sidebar {
+    padding: calc(var(--sidebar-padding) * 2) var(--sidebar-padding);
+    height: 100vh;
+    background-color: var(--jet);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.top {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--sidebar-padding) * 2);
+}
+
+.logo h1 {
+    color: var(--wisteria);
+    font-weight: 700;
+    font-size: 1.5em;
+}
+
+.progress-box {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sidebar-padding);
+}
+
+.progress {
+    display: flex;
+    gap: 10px;
+}
+
+.progress-index {
+    min-width: 23px;
+    height: 23px;
+    border-radius: 100%;
+    border: 2px solid var(--sub);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-index span {
+    font-size: 0.75em;
+    color: var(--sub);
+}
+
+.progress-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.progress-text h1 {
+    font-size: 0.95em;
+    font-weight: 600;
+    color: var(--sub);
+}
+
+.progress-text p {
+    font-size: 0.75em;
+    color: var(--super-sub);
+}
+
+
+/* Styles for currently active progress page */
+.progress.active .progress-index {
+    border: 2px solid var(--wisteria);
+}
+
+.progress.active .progress-index span  {
+    color: var(--wisteria);
+}
+.progress.active .progress-text h1 {
+    color: white;
+}
+
+.progress.active .progress-text p  {
+    color: var(--sub);
+}
+
+
+.bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sidebar-padding);
+}
+
+.quote {
+    max-width: 320px;
+    font-weight: 400;
+    font-size: 0.8em;
+    color: var(--sub);
+}
+
+.profile {
+    width: 100%;
+    align-items: center;
+}
+
+.pfp {
+    width: 60px;
+    height: 60px;
+    border-radius: 100%;
+}
