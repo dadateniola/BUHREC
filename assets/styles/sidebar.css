@@ -1,5 +1,5 @@
 .sidebar {
-    padding: calc(var(--sidebar-padding) * 2) var(--sidebar-padding);
+    padding: calc(var(--sidebar-padding) * 2) var(--sidebar-padding) var(--sidebar-padding) var(--sidebar-padding);
     height: 100vh;
     background-color: var(--jet);
 
@@ -43,7 +43,7 @@
 }
 
 .progress-index span {
-    font-size: 0.75em;
+    font-size: var(--tiny-text);
     color: var(--sub);
 }
 
@@ -54,13 +54,13 @@
 }
 
 .progress-text h1 {
-    font-size: 0.95em;
+    font-size: var(--text);
     font-weight: 600;
     color: var(--sub);
 }
 
 .progress-text p {
-    font-size: 0.75em;
+    font-size: var(--tiny-text);
     color: var(--super-sub);
 }
 
@@ -89,7 +89,7 @@
 }
 
 .quote {
-    max-width: 320px;
+    max-width: 310px;
     font-weight: 400;
     font-size: 0.8em;
     color: var(--sub);
@@ -104,4 +104,23 @@
     width: 60px;
     height: 60px;
     border-radius: 100%;
+}
+
+
+.heading {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+}
+
+.heading h1 {
+    font-size: 1.8em;
+    font-weight: 600;
+}
+
+.heading p {
+    font-size: var(--text);
+    color: var(--sub);
 }
