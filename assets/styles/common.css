@@ -25,7 +25,7 @@
     --sidebar-padding: 30px;
     --input-padding: 15px;
 
-    --text: 0.9em;
+    --text: 0.88em;
     --small-text: 0.8em;
     --tiny-text: 0.7em;
 }
@@ -63,6 +63,10 @@ a {
     object-fit: cover;
 }
 
+.highlight {
+    color: var(--wisteria) !important;
+}
+
 
 /* Form styles */
 .form-box {
@@ -84,6 +88,11 @@ a {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.form-group.change p {
+    text-align: center;
+    font-size: var(--text)
 }
 
 label {
