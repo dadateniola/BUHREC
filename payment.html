@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mastercard Payment</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+  }
+  .container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  h1 {
+    color: #333;
+  }
+  .card {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+  }
+  .card input[type="text"],
+  .card select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+  .card .cvv-block {
+    display: inline-block;
+    width: calc(50% - 5px);
+    margin-right: 10px;
+  }
+  .card .cvv-block input[type="text"] {
+    width: calc(100% - 30px);
+    padding: 10px;
+    box-sizing: border-box;
+    display: inline-block;
+  }
+  .card .cvv-block label {
+    margin-right: 10px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Finalize Payment</h1>
+  <p>Secure your spot. Complete your payment to finalize registration</p>
+  <div class="card">
+    <div class="cardholder-name">
+      <label for="cardholder_name">Cardholder Name:</label><br>
+      <input type="text" id="cardholder_name" name="cardholder_name" placeholder="Enter cardholder name" required><br>
+    </div>
+    <div class="card-number">
+      <label for="card_number">Card Number:</label><br>
+      <div class="card-number-blocks">
+        <div class="card-number-block"><input type="text" maxlength="4" required></div>
+        <div class="card-number-block"><input type="text" maxlength="4" required></div>
+        <div class="card-number-block"><input type="text" maxlength="4" required></div>
+        <div class="card-number-block"><input type="text" maxlength="4" required></div>
+      </div>
+    </div>
+    <div class="expiration">
+      <label for="expiration_month">Expiration Date:</label><br>
+      <select id="expiration_month" name="expiration_month" required>
+        <option value="">Select a Month</option>
+        <option value="01">January</option>
+        <option value="02">February</option>
+        <option value="02">March</option>
+        <option value="02">April</option>
+        <option value="02">May</option>
+        <option value="02">June</option>
+        <option value="02">July</option>
+        <option value="02">August</option>
+        <option value="02">September</option>
+        <option value="02">October</option>
+        <option value="02">November</option>
+        <option value="02">December</option>
+      </select>
+      <span>/</span>
+      <input type="text" id="expiration_year" name="expiration_year" placeholder="Year" required><br>
+    </div>
+    <div class="cvv">
+      <label for="cvv">CVV:</label><br>
+      <div class="cvv-block">
+        <input type="text" id="cvv" name="cvv" placeholder="CVV" required>
+      </div>
+    </div>
+    <input type="submit" value="Pay Now">
+  </div>
+</div>
+
+</body>
+</html>
