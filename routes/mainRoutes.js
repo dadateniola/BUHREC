@@ -5,7 +5,7 @@ const { showSignUpPage, showLoginPage } = require("../controllers/mainController
 const router = Router();
 
 router.get('/', (req, res) => {
-    res.send("Insert landing page here")
+    res.send("/landing")
 });
 
 router.get("/signup", showSignUpPage);
