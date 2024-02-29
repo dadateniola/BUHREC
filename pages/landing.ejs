@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUHREC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .logo {
+            width: 200px;
+            height: auto;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav ul li {
+            margin-left: 20px;
+        }
+
+        .nav ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top:7%;
+            padding-top: 7%;
+            padding-bottom: 7%;
+            background-color: rgb(44,44,44);
+            border-radius: 20px;
+            border: solid 1px rgb(208,170,231);
+        }
+
+        .hero .left {
+            width: 60%;
+        }
+
+        .hero h1 {
+            color: white;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            color: #cccccc;
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 40px;
+        }
+
+        .hero .button {
+            display: inline-block;
+            padding: 15px 25px;
+            background-color: rgb(208,170,231);
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .about {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 7%;
+            padding-top: 7%;
+            padding-bottom: 7%;
+            background-color: rgb(44,44,44);
+            border-radius: 20px;
+            border: solid 1px rgb(208,170,231);
+        }
+
+        .about h2 {
+            color: white;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .about p {
+            color: #cccccc;
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            max-width: 800px;
+            text-align: justify;
+        }
+
+        .about .button {
+            display: inline-block;
+            padding: 15px 25px;
+            background-color: rgb(208,170,231);
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .instructions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            margin-top: 7%;
+            padding-top: 7%;
+            padding-bottom: 7%;
+            background-color: rgb(44,44,44);
+            border-radius: 20px;
+            border: solid 1px rgb(208,170,231);
+        }
+
+        .instructions h2 {
+            color: white;
+            font-size: 36px;
+            margin-bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .instructions .card {
+            width: 25%;
+            margin: 10px;
+            padding: 20px;
+            background-color: rgb(208,170,231);
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .instructions .card p {
+            font-size: 16px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <img src="img\buhreclogo.png" alt="BUHREC logo" class="logo">
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+        <div class="hero">
+            <div class="left">
+                <h1>Get your proposals reviewed by experts</h1>
+                <p>BUHREC is a platform where students and researchers can submit their proposals and pay for reviewers to check for and correct errors in their proposals. Whether you need feedback, proofreading, or editing, we have the best reviewers for you.</p>
+                <a href="#" class="button">Submit your proposal</a>
+                <a href="login.html" class="button">Login to your account</a>
+            </div>
+        </div>
+        <div class="about">
+            <h2>About BUHREC</h2>
+            <p>BUHREC stands for Babcock University Human Research Ethics Committee. We are a team of experienced and qualified reviewers who are committed to ensuring the ethical and scientific quality of research proposals. We started in 2020 as a service for Babcock University students and researchers, but we have since expanded to cater to anyone who needs our assistance.</p>
+            <p>Our mission is to provide fast, reliable, and affordable reviews for your proposals. We have a simple and secure process that allows you to upload your proposal, choose your preferred reviewer, and pay online. You will receive your reviewed proposal within the agreed time frame, along with constructive feedback and suggestions for improvement.</p>
+            <p>We adhere to the highest standards of ethical and academic integrity. We respect your privacy and confidentiality, and we do not share your personal or proposal information with anyone. We also have a strict policy against plagiarism and fraud, and we will not accept or review any proposal that violates these principles.</p>
+            <p>If you have any questions or concerns, please feel free to contact us. We are always happy to hear from you and help you with your research needs.</p>
+            <a href="#" class="button">Contact us</a>
+        </div>
+        <div class="instructions">
+            <h2>How to use our service</h2>
+            <div class="card">
+                <p>Step 1: Create an account on our website.</p>
+            </div>
+            <div class="card">
+                <p>Step 2: Upload your proposal in PDF format and choose your preferred reviewer and type of review.</p>
+            </div>
+            <div class="card">
+                <p>Step 3: Pay securely using your credit card or PayPal account.</p>
+            </div>
+            <div class="card">
+                <p>Step 4: Download your reviewed proposal and see the changes and comments made by your reviewer.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
