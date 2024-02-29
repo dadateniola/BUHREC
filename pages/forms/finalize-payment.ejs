@@ -1,0 +1,54 @@
+<form class="form" action="/finalize-payment" method="post">
+    <div class="heading">
+        <h1>Finalize payment</h1>
+        <p>Secure your spot. Complete your payment to finalize registration</p>
+    </div>
+    <div class="form-group">
+        <label for="card_holder_name">Card Holder Name</label>
+        <input type="text" id="card_holder_name" name="card_holder_name" placeholder="Enter card holders name">
+    </div>
+    <div class="form-group">
+        <label for="card_number">Card Number</label>
+        <input type="number" id="card_number" name="card_number" placeholder="Enter card number"
+            value="5123456789012345">
+    </div>
+    <div class="form-row">
+        <div class="form-exp">
+            <div class="form-group full">
+                <label for="expiration_month">Expiration Date</label>
+                <select id="expiration_month" name="expiration_month">
+                    <option value="">Select a Month</option>
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="02">March</option>
+                    <option value="02">April</option>
+                    <option value="02">May</option>
+                    <option value="02">June</option>
+                    <option value="02">July</option>
+                    <option value="02">August</option>
+                    <option value="02">September</option>
+                    <option value="02">October</option>
+                    <option value="02">November</option>
+                    <option value="02">December</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="no-star clear">.</label>
+                <div class="line-slant-box">
+                    <div class="line-slant"></div>
+                </div>
+            </div>
+            <div class="form-group small">
+                <label for="expiration_year" class="no-star clear">.</label>
+                <input type="text" id="expiration_year" name="expiration_year" placeholder="Year">
+            </div>
+        </div>
+        <div class="form-group small">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" name="cvv" placeholder="CVV">
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit">pay ($15)</button>
+    </div>
+</form>

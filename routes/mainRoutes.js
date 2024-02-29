@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms } = require("../controllers/mainControllers");
+const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole } = require("../controllers/mainControllers");
 
 const router = Router();
 
@@ -18,5 +18,7 @@ router.post("/get-form", getForms)
 router.post("/login", handleLogin)
 
 router.post("/signup", handleSignUp)
+
+router.post("/select-role", handleRole)
 
 module.exports = router;

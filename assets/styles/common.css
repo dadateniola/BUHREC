@@ -73,6 +73,10 @@ a {
     font-size: var(--tiny-text);
 }
 
+.clear {
+    opacity: 0;
+}
+
 
 /* Form styles */
 .form-box {
@@ -85,6 +89,7 @@ a {
 }
 
 .form {
+    max-width: 500px;
     display: flex;
     flex-direction: column;
     gap: var(--sidebar-padding);
@@ -94,6 +99,15 @@ a {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.form-row {
+    display: flex;
+    gap: calc(var(--sidebar-padding) / 2);
+}
+
+.form-group.end {
+    justify-content: end;
 }
 
 .form-group.change p {
@@ -110,12 +124,23 @@ label:not(.no-star)::after {
     color: red;
 }
 
+select,
 input {
     padding: var(--input-padding);
-    background-color: transparent;
+    background-color: var(--errie-black);
     border-radius: 10px;
     border: 2px solid var(--super-sub);
     color: var(--sub);
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url('/images/icons/arrow.png') no-repeat;
+    background-color: var(--errie-black);
+    background-position: 95% center;
+    background-size: 13px;
 }
 
 input[type="checkbox"] {
@@ -148,6 +173,42 @@ button {
     display: flex;
     flex-direction: column;
     gap: calc(var(--sidebar-padding) / 2);
+}
+
+.form-exp {
+    display: flex;
+    /* align-items: end; */
+    gap: 10px;
+    flex: 1;
+}
+
+.form-group.small {
+    width: 100px;
+}
+
+.form-group.full {
+    flex: 1;
+}
+
+.line-slant-cont {
+    display: flex;
+    align-items: end;
+}
+
+.line-slant-box {
+    width: 20px;
+    height: 49px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.line-slant {
+    width: 2px;
+    height: 40px;
+    background-color: var(--super-sub);
+    transform: rotate(20deg);
 }
 
 

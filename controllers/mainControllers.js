@@ -10,8 +10,9 @@ const showSignUpPage = (req, res) => {
     if (!isObject(req.session?.signup)) {
         req.session.signup = {
             // active: 'create-an-account',
-            active: 'select-a-role',
-            completed: []
+            // completed: []
+            active: 'finalize-payment',
+            completed: ['create-an-account', 'select-a-role']
         }
     }
 
@@ -81,11 +82,31 @@ const handleSignUp = (req, res) => {
     req.session.signup.completed.push(req.session.signup.active);
     req.session.signup.active = next;
 
-    console.log(req.session);
+    res.status(200).send({ next, message: 'User information has been stored temporarily', type: 'success' });
+}
 
-    res.status(200).send({ next, message: 'User information temporarily stored', type: 'success' });
+const handleRole = (req, res) => {
+    const roles = [];
+    for (const key in req.body) {
+        roles.push(key);
+    }
+
+    if (!roles.length) return res.status(400).send({ message: 'Please select at least one role', type: 'warning' });
+
+    const next = 'finalize-payment';
+
+    if (req.session.info) req.session.info.roles = roles;
+    else {
+        req.session.info = {};
+        req.session.info.roles = roles;
+    }
+    req.session.signup.completed.push(req.session.signup.active);
+    req.session.signup.active = next;
+
+    res.status(200).send({ next, message: 'User role(s) temporarily stored', type: 'success' });
 }
 
 module.exports = {
-    showSignUpPage, showLoginPage, getForms, handleLogin, handleSignUp
+    showSignUpPage, showLoginPage, getForms, handleLogin, handleSignUp,
+    handleRole
 }
