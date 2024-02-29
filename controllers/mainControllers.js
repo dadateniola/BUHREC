@@ -106,7 +106,19 @@ const handleRole = (req, res) => {
     res.status(200).send({ next, message: 'User role(s) temporarily stored', type: 'success' });
 }
 
+const handlePayment = (req, res) => {
+    //Validate user information
+    const methods = new Methods(req.body);
+    const { invalidKeys } = methods.validateData();
+
+    //Check if there is invalid data to send back to user
+    if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
+
+    // const next = 'select-a-role';
+    res.status(500).send({ message: 'Couldnt finalize payment', type: 'error' });
+}
+
 module.exports = {
     showSignUpPage, showLoginPage, getForms, handleLogin, handleSignUp,
-    handleRole
+    handleRole, handlePayment
 }

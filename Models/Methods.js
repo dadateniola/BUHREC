@@ -15,6 +15,22 @@ class Methods {
             password: [
                 /\S+/
             ],
+            card_holder_name: [
+                /^[a-zA-Z]+(?:-[a-zA-Z]+)?(?: [a-zA-Z]+(?:-[a-zA-Z]+)?)+$/
+            ],
+            card_number: [
+                /^\d{16}$/
+            ],
+            expiration_month: [
+                /\S+/
+            ],
+            expiration_year: [
+                /\S+/
+            ],
+            cvv: [
+                /^\d{3}$/
+            ]
+            
         };
 
         const result = {
