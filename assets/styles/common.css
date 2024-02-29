@@ -18,6 +18,7 @@
     --light: #FFFFFF;
     --jet: #2C2C2C;
     --wisteria: #D0AAE7;
+    --malachite: #4DE265;
 
     --sub: rgba(var(--white), 0.7);
     --super-sub: rgba(var(--white), 0.4);
@@ -67,6 +68,11 @@ a {
     color: var(--wisteria) !important;
 }
 
+.error {
+    color: red !important;
+    font-size: var(--tiny-text);
+}
+
 
 /* Form styles */
 .form-box {
@@ -99,7 +105,7 @@ label {
     font-size: var(--text);
 }
 
-label::after {
+label:not(.no-star)::after {
     content: "*";
     color: red;
 }
@@ -112,6 +118,10 @@ input {
     color: var(--sub);
 }
 
+input[type="checkbox"] {
+    display: none;
+}
+
 button {
     padding: var(--input-padding);
     background-color: var(--wisteria);
@@ -119,6 +129,7 @@ button {
     border-radius: 10px;
     text-transform: capitalize;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .extra {
@@ -137,4 +148,109 @@ button {
     display: flex;
     flex-direction: column;
     gap: calc(var(--sidebar-padding) / 2);
+}
+
+
+.role {
+    --color: var(--sub);
+
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid var(--color);
+    border-radius: 10px;
+    cursor: pointer;
+
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+}
+
+.role-cont {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.role-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+}
+
+.role-text {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.role-text h1 {
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.role-text p {
+    font-size: 0.8em;
+    color: var(--color);
+}
+
+.role-check {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color);
+    border-radius: 100%;
+}
+
+.role-check img {
+    opacity: 0;
+}
+
+
+/* Styles for when role is checked */
+.role.checked {
+    --color: var(--wisteria);
+}
+
+.role.checked .role-text h1 {
+    color: var(--wisteria);
+}
+
+.role.checked .role-check img {
+    opacity: 1;
+}
+
+
+/* Spinner */
+:not(.spinner)>.spinner:first-child {
+    opacity: 1;
+}
+
+.spinner {
+    width: 100%;
+    height: 100%;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+}
+
+[data-spinner] {
+    border: 3px solid black;
+    border-left-color: transparent;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    animation: spinner 1s linear infinite;
+}
+
+@keyframes spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

@@ -12,17 +12,18 @@
 
 <body>
 
+    <%- include('partials/alert') %>
     <main>
         <%- include('partials/sidebar') %>
             <div class="form-box">
-                <div class="form">
+                <form class="form" action="/login" method="post">
                     <div class="heading">
                         <h1>Login to your account</h1>
                         <p>Welcome back! Log in to access your account effortlessly</p>
                     </div>
                     <div class="form-group">
-                        <label for="emailORphone">Email or Phone number</label>
-                        <input type="text" name="emailORphone" id="emailORphone"
+                        <label for="email_phone">Email or Phone number</label>
+                        <input type="text" name="email_phone" id="email_phone"
                             placeholder="Enter your email or phone number">
                     </div>
                     <div class="form-special">
@@ -40,11 +41,12 @@
                     <div class="form-group change">
                         <p>Don't have an account? <span class="highlight">Create an account</span></p>
                     </div>
-                </div>
+                </form>
             </div>
     </main>
 
     <%- include('partials/foot') %>
+    <script src="/scripts/login.js"></script>
 
 </body>
 

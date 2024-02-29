@@ -4,28 +4,28 @@
             <h1>BUHREC</h1>
         </div>
         <div class="progress-box">
-            <div class="progress active">
-                <div class="progress-index-box">
-                    <div class="progress-index">
-                        <span>1</span>
+            <% if (typeof sidebar !== 'undefined' && sidebar) { %>
+                <% sidebar.forEach( (progress, index) => { %>
+                    <div class="progress
+                    <% if (progress.head.toLowerCase().split(" ").join("-") == active) { %>
+                     active
+                    <% } %>
+                    <% if (completed.includes(progress.head.toLowerCase().split(" ").join("-"))) { %>
+                     completed
+                    <% } %>
+                    ">
+                        <div class="progress-index-box">
+                            <div class="progress-index">
+                                <span><%= index + 1 %></span>
+                            </div>
+                        </div>
+                        <div class="progress-text">
+                            <h1><%= progress.head %></h1>
+                            <p><%= progress.para %></p>
+                        </div>
                     </div>
-                </div>
-                <div class="progress-text">
-                    <h1>Login to your account</h1>
-                    <p>Enter your credentials to access your account</p>
-                </div>
-            </div>
-            <div class="progress">
-                <div class="progress-index-box">
-                    <div class="progress-index">
-                        <span>2</span>
-                    </div>
-                </div>
-                <div class="progress-text">
-                    <h1>Verification & Validation</h1>
-                    <p>Trying to ensure data accuracy and reliability </p>
-                </div>
-            </div>
+                <% }) %>    
+            <% } %>
         </div>
     </div>
     <div class="bottom">
