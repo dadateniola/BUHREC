@@ -7,7 +7,7 @@
     box-sizing: border-box;
 
     font-family: "Inter", sans-serif;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 :root {
@@ -23,6 +23,11 @@
     --super-sub: rgba(var(--white), 0.4);
 
     --sidebar-padding: 30px;
+    --input-padding: 15px;
+
+    --text: 0.88em;
+    --small-text: 0.8em;
+    --tiny-text: 0.7em;
 }
 
 
@@ -36,6 +41,10 @@ body {
 
 main {
     display: flex;
+}
+
+a {
+    text-decoration: none;
 }
 
 
@@ -52,4 +61,80 @@ main {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.highlight {
+    color: var(--wisteria) !important;
+}
+
+
+/* Form styles */
+.form-box {
+    flex: 1;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sidebar-padding);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group.change p {
+    text-align: center;
+    font-size: var(--text)
+}
+
+label {
+    font-size: var(--text);
+}
+
+label::after {
+    content: "*";
+    color: red;
+}
+
+input {
+    padding: var(--input-padding);
+    background-color: transparent;
+    border-radius: 10px;
+    border: 2px solid var(--super-sub);
+    color: var(--sub);
+}
+
+button {
+    padding: var(--input-padding);
+    background-color: var(--wisteria);
+    color: black;
+    border-radius: 10px;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+.extra {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.extra a {
+    font-size: var(--small-text);
+    text-transform: capitalize;
+    color: var(--wisteria);
+}
+
+.form-special {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--sidebar-padding) / 2);
 }

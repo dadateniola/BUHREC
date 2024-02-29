@@ -14,9 +14,36 @@
 
     <main>
         <%- include('partials/sidebar') %>
-
+            <div class="form-box">
+                <div class="form">
+                    <div class="heading">
+                        <h1>Login to your account</h1>
+                        <p>Welcome back! Log in to access your account effortlessly</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailORphone">Email or Phone number</label>
+                        <input type="text" name="emailORphone" id="emailORphone"
+                            placeholder="Enter your email or phone number">
+                    </div>
+                    <div class="form-special">
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" name="password" id="password" placeholder="Enter your password">
+                        </div>
+                        <div class="form-group extra">
+                            <a href="" class="highlight">forgot password</a>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit">login</button>
+                        </div>
+                    </div>
+                    <div class="form-group change">
+                        <p>Don't have an account? <span class="highlight">Create an account</span></p>
+                    </div>
+                </div>
+            </div>
     </main>
-    
+
     <%- include('partials/foot') %>
 
 </body>
