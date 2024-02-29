@@ -41,7 +41,7 @@ class PageSetup {
     static setupForm() {
         const form = select("form");
 
-        form.addEventListener("submit", async (event) => {
+        form?.addEventListener("submit", async (event) => {
             event.preventDefault();
 
             const form = event.target;
@@ -76,6 +76,12 @@ class PageSetup {
                             //If request successful, show alert
                             new Alert(data);
                             PageSetup.getForm({ page: data.next })
+
+                            if(data.next == 'verification-&-validation') {
+                                setTimeout(() => {
+                                    window.location.href = '/dashboard';
+                                }, 3000);
+                            }
                         }
                     } else {
                         //If there was a problem in the backend, display alert

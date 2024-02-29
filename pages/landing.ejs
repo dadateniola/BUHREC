@@ -166,11 +166,15 @@
         }
 
     </style>
+    <%- include('partials/head') %>
 </head>
 <body>
     <div class="container">
         <div class="nav">
-            <img src="img\buhreclogo.png" alt="BUHREC logo" class="logo">
+            <!-- <img src="img\buhreclogo.png" alt="BUHREC logo" class="logo"> -->
+            <div class="logo">
+                <h1>BUHREC</h1>
+            </div>
             <ul>
                 <li><a href="#">Home</a></li>
                 <li><a href="#">About</a></li>
@@ -182,8 +186,8 @@
             <div class="left">
                 <h1>Get your proposals reviewed by experts</h1>
                 <p>BUHREC is a platform where students and researchers can submit their proposals and pay for reviewers to check for and correct errors in their proposals. Whether you need feedback, proofreading, or editing, we have the best reviewers for you.</p>
-                <a href="#" class="button">Submit your proposal</a>
-                <a href="login.html" class="button">Login to your account</a>
+                <a href="/signup" class="button">Create an account</a>
+                <a href="/login" class="button">Login to your account</a>
             </div>
         </div>
         <div class="about">

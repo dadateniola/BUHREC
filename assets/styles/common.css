@@ -54,6 +54,10 @@ a {
     text-transform: capitalize !important;
 }
 
+.none {
+    opacity: 0;
+}
+
 .img-here {
     overflow: hidden;
 }
@@ -110,7 +114,7 @@ a {
     justify-content: end;
 }
 
-.form-group.change p {
+.form-group.change a {
     text-align: center;
     font-size: var(--text)
 }
@@ -313,5 +317,43 @@ button {
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+
+/* Loader */
+.loader {
+    display: block;
+    --height-of-loader: 5px;
+    --loader-color: var(--wisteria);
+    width: 130px;
+    height: var(--height-of-loader);
+    border-radius: 30px;
+    background-color: rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+.loader::before {
+    content: "";
+    position: absolute;
+    background: var(--loader-color);
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    border-radius: 30px;
+    animation: moving 1s ease-in-out infinite;
+    ;
+}
+
+@keyframes moving {
+    50% {
+        width: 100%;
+    }
+
+    100% {
+        width: 0;
+        right: 0;
+        left: unset;
     }
 }

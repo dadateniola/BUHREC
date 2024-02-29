@@ -60,7 +60,6 @@ class Methods {
         return result;
     }
 
-
     // Static methods
     static generateUniqueID() {
         const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

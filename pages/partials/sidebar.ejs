@@ -13,6 +13,9 @@
                     <% if (completed.includes(progress.head.toLowerCase().split(" ").join("-"))) { %>
                      completed
                     <% } %>
+                    <% if (progress.head.toLowerCase().split(" ").join("-") == 'verification-&-validation') { %>
+                     none
+                    <% } %>
                     ">
                         <div class="progress-index-box">
                             <div class="progress-index">
