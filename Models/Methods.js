@@ -15,6 +15,9 @@ class Methods {
             password: [
                 /\S+/
             ],
+            degree: [
+                /\S+/
+            ],
             card_holder_name: [
                 /^[a-zA-Z]+(?:-[a-zA-Z]+)?(?: [a-zA-Z]+(?:-[a-zA-Z]+)?)+$/
             ],
@@ -30,7 +33,7 @@ class Methods {
             cvv: [
                 /^\d{3}$/
             ]
-            
+
         };
 
         const result = {

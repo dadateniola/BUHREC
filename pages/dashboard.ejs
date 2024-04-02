@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+    <%- include('partials/head') %>
+
+</head>
+
+<body>
+
+    <%- include('partials/navbar') %>
+        <main class="main-content">
+            <div class="content-head">
+                <h1>dashboard</h1>
+                <span class="user-role">student</span>
+            </div>
+            <section>
+                <div class="section-head">
+                    <div class="section-text">
+                        <h1>recent tasks</h1>
+                        <p><span class="highlight">2 total</span>, proceed to resolve them</p>
+                    </div>
+                    <div class="section-cta">
+                        <button class="add-to-task">
+                            <img src="/images/icons/add.png" alt="icon">
+                            <p>Add a new task</p>
+                        </button>
+                    </div>
+                </div>
+                <div class="section-table">
+                    <table>
+                        <colgroup>
+                            <col>
+                            <col style="width: 200px;" span="2">
+                            <col style="width: 180px;" span="2">
+                            <col style="width: 100px;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>name</th>
+                                <th>course</th>
+                                <th>reviewer</th>
+                                <th>status</th>
+                                <th>finish date</th>
+                                <th>action</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>online library management system (OLMS)</p>
+                                </td>
+                                <td>
+                                    <p>computer science</p>
+                                </td>
+                                <td>
+                                    <div class="pfp-img">
+                                        <img src="/images/avatars/avatar-1.png" alt="pfp">
+                                        <p>ezenagu divine</p>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-status" data-status="in progress">
+                                        <div class="status"></div>
+                                        <p>in progress</p>
+                                    </div>
+                                </td>
+                                <td>7 Jul 2024</td>
+                                <td>
+                                    <div class="table-icon">
+                                        <img src="/images/icons/arrow.png" alt="cta">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p>learning management system (LMS)</p>
+                                </td>
+                                <td>
+                                    <p>software engineering</p>
+                                </td>
+                                <td>
+                                    <div class="pending-icon">
+                                        <div class="pend"></div>
+                                        <div class="pend"></div>
+                                        <div class="pend"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="table-status" data-status="pending">
+                                        <div class="status"></div>
+                                        <p>pending</p>
+                                    </div>
+                                </td>
+                                <td>4 Jun 2024</td>
+                                <td>
+                                    <div class="table-icon">
+                                        <img src="/images/icons/arrow.png" alt="cta">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+</body>
+
+</html>

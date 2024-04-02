@@ -3,62 +3,74 @@
         <h1>Select a role</h1>
         <p>Select your role to customize your experience and get started</p>
     </div>
-    <div class="form-group">
-        <label for="student" class="role no-star">
-            <div class="role-cont">
-                <div class="role-img img-here">
-                    <img src="/images/pfp/student.jpg" alt="student">
+    <div class="form-roles">
+        <div class="form-group">
+            <label for="student" class="role no-star">
+                <div class="role-cont">
+                    <div class="role-img img-here">
+                        <img src="/images/pfp/student.jpg" alt="student">
+                    </div>
+                    <div class="role-text">
+                        <h1>I'm a student</h1>
+                        <p>Submit proposals and contribute to research</p>
+                    </div>
                 </div>
-                <div class="role-text">
-                    <h1>I'm a student</h1>
-                    <p>Submit proposals and contribute to research</p>
+                <div class="role-checkbox">
+                    <div class="role-check img-here">
+                        <img src="/images/icons/check.png" alt="check">
+                    </div>
                 </div>
-            </div>
-            <div class="role-checkbox">
-                <div class="role-check img-here">
-                    <img src="/images/icons/check.png" alt="check">
+            </label>
+            <input type="checkbox" name="student" id="student">
+        </div>
+        <div class="form-group">
+            <label for="researcher" class="role no-star">
+                <div class="role-cont">
+                    <div class="role-img img-here">
+                        <img src="/images/pfp/researcher.jpg" alt="researcher">
+                    </div>
+                    <div class="role-text">
+                        <h1>I'm a researcher</h1>
+                        <p>Submit proposals and contribute to research</p>
+                    </div>
                 </div>
-            </div>
-        </label>
-        <input type="checkbox" name="student" id="student">
+                <div class="role-checkbox">
+                    <div class="role-check img-here">
+                        <img src="/images/icons/check.png" alt="check">
+                    </div>
+                </div>
+            </label>
+            <input type="checkbox" name="researcher" id="researcher">
+        </div>
+        <div class="form-group">
+            <label for="reviewer" class="role no-star">
+                <div class="role-cont">
+                    <div class="role-img img-here">
+                        <img src="/images/pfp/reviewer.jpg" alt="reviewer">
+                    </div>
+                    <div class="role-text">
+                        <h1>I'm a reviewer</h1>
+                        <p>Submit proposals and contribute to research</p>
+                    </div>
+                </div>
+                <div class="role-checkbox">
+                    <div class="role-check img-here">
+                        <img src="/images/icons/check.png" alt="check">
+                    </div>
+                </div>
+            </label>
+            <input type="checkbox" name="reviewer" id="reviewer">
+        </div>
     </div>
+    <div class="line-hr"></div>
     <div class="form-group">
-        <label for="researcher" class="role no-star">
-            <div class="role-cont">
-                <div class="role-img img-here">
-                    <img src="/images/pfp/researcher.jpg" alt="researcher">
-                </div>
-                <div class="role-text">
-                    <h1>I'm a researcher</h1>
-                    <p>Submit proposals and contribute to research</p>
-                </div>
-            </div>
-            <div class="role-checkbox">
-                <div class="role-check img-here">
-                    <img src="/images/icons/check.png" alt="check">
-                </div>
-            </div>
-        </label>
-        <input type="checkbox" name="researcher" id="researcher">
-    </div>
-    <div class="form-group">
-        <label for="reviewer" class="role no-star">
-            <div class="role-cont">
-                <div class="role-img img-here">
-                    <img src="/images/pfp/reviewer.jpg" alt="reviewer">
-                </div>
-                <div class="role-text">
-                    <h1>I'm a reviewer</h1>
-                    <p>Submit proposals and contribute to research</p>
-                </div>
-            </div>
-            <div class="role-checkbox">
-                <div class="role-check img-here">
-                    <img src="/images/icons/check.png" alt="check">
-                </div>
-            </div>
-        </label>
-        <input type="checkbox" name="reviewer" id="reviewer">
+        <label for="degree">Degree</label>
+        <select id="degree" name="degree">
+            <option value="">Select a degree</option>
+            <option value="msc">MSc - Master of Science</option>
+            <option value="bsc">BSc - Bachelor of Science</option>
+            <option value="phd">PhD - Doctor of Philosophy</option>
+        </select>
     </div>
     <div class="form-group">
         <button type="submit">continue</button>

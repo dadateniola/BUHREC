@@ -1,0 +1,17 @@
+header.navbar {
+    padding: var(--sidebar-padding) var(--general-padding);
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    font-size: var(--text);
+}
+
+header.navbar .links {
+    display: flex;
+    gap: var(--general-padding);
+}
+
+header.navbar a {
+    text-transform: capitalize;
+}

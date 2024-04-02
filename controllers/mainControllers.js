@@ -15,14 +15,14 @@ const showSignUpPage = (req, res) => {
             completed: []
         }
         // req.session.signup = {
-        //     active: 'verification-&-validation',
-        //     completed: ['create-an-account', 'select-a-role', 'finalize-payment']
+        //     active: 'select-a-role',
+        //     completed: ['create-an-account']
         // }
         // req.session.info = {
         //     email: 'emmatenny2004@gmail.com',
         //     password: 'pass',
         //     fullname: 'dada teniola',
-        //     roles: ['researcher', 'reviewer']
+        //     // roles: ['researcher', 'reviewer']
         // }
     }
 
@@ -31,19 +31,19 @@ const showSignUpPage = (req, res) => {
     const sidebar = [
         {
             head: 'Create an account',
-            para: 'Make an account with us to provide better experience'
+            para: 'Enhance your experience by creating an account'
         },
         {
             head: 'Select a role',
-            para: 'Choose a role to access relevant features in the system'
+            para: 'Choose a role to access relevant system features'
         },
         {
-            head: 'Finalize payment',
-            para: 'Securely confirm your payment to complete registration'
+            head: 'Add a credit card',
+            para: 'Submit payment details to complete registration'
         },
         {
             head: 'Verification & Validation',
-            para: 'Trying to ensure data accuracy and reliability '
+            para: 'Ensuring data accuracy and reliability'
         }
     ]
 
@@ -75,7 +75,11 @@ const showLoginPage = (req, res) => {
 }
 
 const showDashboard = (req, res) => {
-    res.send("Insert dashboard here");
+    res.render("dashboard");
+}
+
+const showTasksPage = (req, res) => {
+    res.render("tasks");
 }
 
 const getForms = async (req, res) => {
@@ -92,55 +96,112 @@ const getForms = async (req, res) => {
 }
 
 const handleLogin = async (req, res) => {
-    const { email, password } = req.body;
+    try {
+        //Validate user information
+        const methods = new Methods(req.body);
+        const { invalidKeys } = methods.validateData();
 
-    const user = await User.find(['email', email]);
+        //Check if there is invalid data to send back to user
+        if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
 
-    if(user.length) {
-        const next = 'verification-&-validation';
-        res.status(200).send({ next, message: 'Authentication successful, please wait as we clean up', type: 'success' });
-    } else {
-        res.status(404).send({ message: 'Incorrect login credentials', type: 'warning' })
+        const { email, password } = req.body;
+
+        const user = await User.find(['email', email]);
+
+        if (user.length) {
+            const next = 'verification-&-validation';
+
+            req.session.login.completed.push(req.session.login.active);
+            req.session.login.active = next;
+            console.log(req.session);
+            res.status(200).send({
+                next,
+                completed: req.session.login.completed,
+                alert: { message: 'Authentication successful, please wait as we clean up', type: 'success' },
+            });
+        } else {
+            res.status(404).send({ message: 'Incorrect login credentials', type: 'warning' })
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error, please try again', type: 'error' });
     }
-    
 }
 
-const handleSignUp = (req, res) => {
-    //Validate user information
-    const methods = new Methods(req.body);
-    const { invalidKeys } = methods.validateData();
+const handleSignUp = async (req, res) => {
+    try {
+        //Validate user information
+        const methods = new Methods(req.body);
+        const { invalidKeys } = methods.validateData();
 
-    //Check if there is invalid data to send back to user
-    if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
+        //Check if there is invalid data to send back to user
+        if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
 
-    const next = 'select-a-role';
+        const next = 'select-a-role';
 
-    req.session.info = req.body;
-    req.session.signup.completed.push(req.session.signup.active);
-    req.session.signup.active = next;
+        const mailExists = await User.find(['email', req.body?.email]);
 
-    res.status(200).send({ next, message: 'User information has been stored temporarily', type: 'success' });
+        if (mailExists.length) {
+            res.status(400).send({ message: 'Email is already in use', type: 'warning' })
+            return;
+        }
+
+        req.session.info = req.body;
+        req.session.signup.completed.push(req.session.signup.active);
+        req.session.signup.active = next;
+
+        res.status(200).send({
+            next,
+            completed: req.session.signup.completed,
+            alert: { message: 'User information has been stored temporarily', type: 'success' },
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error, please try again', type: 'error' });
+    }
 }
 
 const handleRole = (req, res) => {
-    const roles = [];
-    for (const key in req.body) {
-        roles.push(key);
+    try {
+        const { degree } = req.body;
+        delete req.body.degree;
+
+        //Validate user information
+        const methods = new Methods({ degree });
+        const { invalidKeys } = methods.validateData();
+
+        //Check if there is invalid data to send back to user
+        if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
+
+        const roles = [];
+        for (const key in req.body) {
+            roles.push(key);
+        }
+
+        if (!roles.length) return res.status(400).send({ message: 'Please select at least one role', type: 'warning' });
+
+        const next = 'add-a-credit-card';
+
+        if (req.session.info) req.session.info.roles = roles;
+        else {
+            req.session.info = {};
+            req.session.info.roles = roles;
+        }
+
+        req.session.info.degree = degree;
+
+        req.session.signup.completed.push(req.session.signup.active);
+        req.session.signup.active = next;
+
+        res.status(200).send({
+            next,
+            completed: req.session.signup.completed,
+            alert: { message: 'User role(s) temporarily stored', type: 'success' },
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error, please try again', type: 'error' });
     }
-
-    if (!roles.length) return res.status(400).send({ message: 'Please select at least one role', type: 'warning' });
-
-    const next = 'finalize-payment';
-
-    if (req.session.info) req.session.info.roles = roles;
-    else {
-        req.session.info = {};
-        req.session.info.roles = roles;
-    }
-    req.session.signup.completed.push(req.session.signup.active);
-    req.session.signup.active = next;
-
-    res.status(200).send({ next, message: 'User role(s) temporarily stored', type: 'success' });
 }
 
 const handlePayment = async (req, res) => {
@@ -170,7 +231,15 @@ const handlePayment = async (req, res) => {
         await user_role.multiAdd();
 
         const next = 'verification-&-validation';
-        res.status(200).send({ next, message: 'Payment successful, please wait as we clean up', type: 'success' });
+
+        req.session.signup.completed.push(req.session.signup.active);
+        req.session.signup.active = next;
+
+        res.status(200).send({
+            next,
+            completed: req.session.signup.completed,
+            alert: { message: 'Credit card added successfully, please wait as we clean up', type: 'success' },
+        });
     } catch (error) {
         console.log(error);
         res.status(500).send({ message: 'Internal server error, please try again', type: 'error' });
@@ -179,5 +248,5 @@ const handlePayment = async (req, res) => {
 
 module.exports = {
     showSignUpPage, showLoginPage, getForms, handleLogin, handleSignUp,
-    handleRole, handlePayment, showDashboard
+    handleRole, handlePayment, showDashboard, showTasksPage
 }

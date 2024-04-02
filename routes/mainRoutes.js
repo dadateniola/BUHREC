@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard } = require("../controllers/mainControllers");
+const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard, showTasksPage } = require("../controllers/mainControllers");
 
 const router = Router();
 
@@ -13,6 +13,8 @@ router.get("/signup", showSignUpPage);
 router.get("/login", showLoginPage);
 
 router.get("/dashboard", showDashboard);
+
+router.get("/tasks", showTasksPage);
 
 
 router.post("/get-form", getForms)

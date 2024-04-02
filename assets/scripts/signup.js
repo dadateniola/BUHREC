@@ -38,6 +38,26 @@ class PageSetup {
         }
     }
 
+    static updateSidebar(params = {}) {
+        const { active, completed } = params;
+
+        if (!completed.length) return console.warn("Could no update sidebar as 'completed' is empty");
+
+        selectAll(".sidebar .progress-box .progress").forEach(elem => {
+            var state = null;
+            const heading = selectWith(elem, 'h1').innerText;
+            const head = heading.toLowerCase().split(" ").join("-");
+
+            if (head == active) state = 'active';
+            if (completed.includes(head)) state = 'completed';
+            // if (head == 'verification-&-validation') state = 'none';
+
+            elem.classList.remove("active", "completed", "none");
+            if (state) elem.classList.add(state);
+        })
+
+    }
+
     static setupForm() {
         const form = select("form");
 
@@ -74,10 +94,14 @@ class PageSetup {
                         if (data?.url) return window.location.href = data?.url || "/";
                         else {
                             //If request successful, show alert
-                            new Alert(data);
+                            new Alert(data.alert);
                             PageSetup.getForm({ page: data.next })
+                            PageSetup.updateSidebar({
+                                active: data.next,
+                                completed: data.completed
+                            });
 
-                            if(data.next == 'verification-&-validation') {
+                            if (data.next == 'verification-&-validation') {
                                 setTimeout(() => {
                                     window.location.href = '/dashboard';
                                 }, 3000);
