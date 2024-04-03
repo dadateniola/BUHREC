@@ -125,13 +125,18 @@ class PageSetup {
 new PageSetup();
 
 function text() {
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    var radios = document.querySelectorAll('input[type="radio"]');
 
-    checkboxes.forEach(function (checkbox) {
-        checkbox.addEventListener('click', function () {
-            const role = select(`label[for="${this.id}"]`);
-
-            role.classList.toggle("checked");
+    radios.forEach(function (radio) {
+        radio.addEventListener('click', function () {
+            document.querySelectorAll('input[type="radio"]').forEach(elem => {
+                const role = select(`label[for="${elem.id}"]`);
+                if (elem.checked) {
+                    role.classList.add("checked");
+                } else {
+                    role.classList.remove("checked");
+                }
+            })
         });
     });
 }

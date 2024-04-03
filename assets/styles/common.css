@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap');
 
 * {
     margin: 0;
@@ -19,6 +20,7 @@
     --jet: #2C2C2C;
     --wisteria: #D0AAE7;
     --malachite: #4DE265;
+    --ever-green: #567568;
 
     --complete: #008000;
     --in-progress: #1E90FF;
@@ -219,7 +221,7 @@ select {
     background-size: 13px;
 }
 
-input[type="checkbox"] {
+input[type="radio"] {
     display: none;
 }
 
@@ -855,7 +857,8 @@ p.sub {
     background-color: var(--errie-black);
     z-index: 10;
 
-    display: flex;
+    display: none;
+    /* display: flex; */
 }
 
 .task-content {
@@ -989,15 +992,12 @@ span.glow {
 }
 
 .task-chat {
-    position: fixed;
+    padding: 20px;
+    position: sticky;
     top: 0;
     right: 0;
     width: var(--task-sidebar);
     height: 100%;
-}
-
-.task-chat {
-    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -1066,8 +1066,27 @@ span.glow {
 }
 
 .task-message-box {
+    padding: 0 10px;
     flex: 1;
     width: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.task-message-box::-webkit-scrollbar {
+    width: 3px;
+}
+
+.task-message-box::-webkit-scrollbar-thumb {
+    background-color: rgba(var(--white), 0.2);
+}
+
+.task-message-box::-webkit-scrollbar-track {
+    background-color: transparent;
 }
 
 .task-chat-box {
@@ -1126,4 +1145,51 @@ span.glow {
 
 .task-chat-box textarea {
     height: auto;
+}
+
+.message-cont {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message-cont p {
+    font-size: var(--small-text);
+}
+
+.message-head {
+    display: flex;
+    justify-content: space-between;
+}
+
+.message-head .pfp-text p {
+    text-transform: capitalize;
+    font-size: var(--tiny-text);
+}
+
+.message-time {
+    display: flex;
+    align-items: end;
+    font-size: var(--tiny-text);
+}
+
+.message-time span {
+    color: var(--sub);
+}
+
+.message-body {
+    display: flex;
+    justify-content: end;
+}
+
+.message-body-text {
+    width: 85%;
+    padding: 15px;
+    background-color: var(--wisteria);
+    border-radius: 10px;
+}
+
+.message-body-text p {
+    color: black;
+    font-weight: 500;
 }

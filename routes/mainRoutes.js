@@ -1,14 +1,12 @@
 const { Router } = require("express");
 
-const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard, showTasksPage, handleUpload, getPDF, routeSetup } = require("../controllers/mainControllers");
+const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard, showTasksPage, handleUpload, getPDF, routeSetup, handleExtra, showLandingPage } = require("../controllers/mainControllers");
 
 const router = Router();
 
 router.use(routeSetup);
 
-router.get('/', (req, res) => {
-    res.render("landing");
-});
+router.get('/', showLandingPage);
 
 router.get("/signup", showSignUpPage);
 
@@ -26,6 +24,8 @@ router.post("/login", handleLogin);
 router.post("/signup", handleSignUp);
 
 router.post("/select-role", handleRole);
+
+router.post("/extra", handleExtra);
 
 router.post("/finalize-payment", handlePayment);
 

@@ -52,21 +52,26 @@ const routeSetup = async (req, res, next) => {
     }
 }
 
+const showLandingPage = (req, res) => {
+    res.render("landing");
+}
+
 const showSignUpPage = (req, res) => {
     if (!isObject(req.session?.signup)) {
         req.session.signup = {
             active: 'create-an-account',
             completed: []
         }
+
         // req.session.signup = {
-        //     active: 'select-a-role',
-        //     completed: ['create-an-account']
+        //     active: 'additional-information',
+        //     completed: ['create-an-account', 'select-a-role']
         // }
         // req.session.info = {
         //     email: 'emmatenny2004@gmail.com',
         //     password: 'pass',
         //     fullname: 'dada teniola',
-        //     // roles: ['researcher', 'reviewer']
+        //     role: 'student'
         // }
     }
 
@@ -80,6 +85,10 @@ const showSignUpPage = (req, res) => {
         {
             head: 'Select a role',
             para: 'Choose a role to access relevant system features'
+        },
+        {
+            head: 'Additional Information',
+            para: 'Share more about yourself to tailor your experience'
         },
         {
             head: 'Add a credit card',
@@ -207,32 +216,17 @@ const handleSignUp = async (req, res) => {
 
 const handleRole = (req, res) => {
     try {
-        const { degree } = req.body;
-        delete req.body.degree;
+        const { role } = req.body;
 
-        //Validate user information
-        const methods = new Methods({ degree });
-        const { invalidKeys } = methods.validateData();
+        if (!role) return res.status(400).send({ message: 'Please select at least one role', type: 'warning' });
 
-        //Check if there is invalid data to send back to user
-        if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
+        const next = 'additional-information';
 
-        const roles = [];
-        for (const key in req.body) {
-            roles.push(key);
-        }
-
-        if (!roles.length) return res.status(400).send({ message: 'Please select at least one role', type: 'warning' });
-
-        const next = 'add-a-credit-card';
-
-        if (req.session.info) req.session.info.roles = roles;
+        if (req.session.info) req.session.info.role = role;
         else {
             req.session.info = {};
-            req.session.info.roles = roles;
+            req.session.info.role = role;
         }
-
-        req.session.info.degree = degree;
 
         req.session.signup.completed.push(req.session.signup.active);
         req.session.signup.active = next;
@@ -240,7 +234,37 @@ const handleRole = (req, res) => {
         res.status(200).send({
             next,
             completed: req.session.signup.completed,
-            alert: { message: 'User role(s) temporarily stored', type: 'success' },
+            alert: { message: 'User role temporarily stored', type: 'success' },
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: 'Internal server error, please try again', type: 'error' });
+    }
+}
+
+const handleExtra = async (req, res) => {
+    try {
+        //Validate user information
+        const methods = new Methods(req.body);
+        const { invalidKeys } = methods.validateData();
+
+        //Check if there is invalid data to send back to user
+        if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
+
+        const next = 'add-a-credit-card';
+
+        if (!req.session.info) req.session.info = {};
+        for (const key in req.body) {
+            req.session.info[key] = req.body[key];
+        }
+
+        req.session.signup.completed.push(req.session.signup.active);
+        req.session.signup.active = next;
+
+        res.status(200).send({
+            next,
+            completed: req.session.signup.completed,
+            alert: { message: 'Additional information temporarily stored', type: 'success' },
         });
     } catch (error) {
         console.log(error);
@@ -256,23 +280,9 @@ const handlePayment = async (req, res) => {
     //Check if there is invalid data to send back to user
     if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
 
-    if (!req.session?.info?.roles) return res.status(500).send({ message: 'Something went wrong', type: 'error' });
-
     try {
-        const roles = req.session.info.roles;
-        delete req.session.info.roles;
-
         const user = new User(req.session.info);
         await user.add();
-
-        const columns = ['user_id', 'role'];
-        const values = roles.map(role => [
-            user.id,
-            role,
-        ]);
-
-        const user_role = new UserRole({ columns, values });
-        await user_role.multiAdd();
 
         const next = 'verification-&-validation';
 
@@ -292,7 +302,7 @@ const handlePayment = async (req, res) => {
 
 const handleUpload = async (req, res) => {
     if (!req?.files) return (req.aborted) ? console.log('Request aborted but still received') : console.log('Files not received');
-    
+
     //Remove this
     //------------------------------
     req.session.uid = '1';
@@ -354,7 +364,8 @@ const getPDF = async (req, res) => {
 
 module.exports = {
     routeSetup,
+    showLandingPage,
     showSignUpPage, showLoginPage, getForms, handleLogin,
     handleSignUp, handleRole, handlePayment, showDashboard,
-    showTasksPage, handleUpload, getPDF
+    showTasksPage, handleUpload, getPDF, handleExtra
 }

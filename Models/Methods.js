@@ -18,6 +18,12 @@ class Methods {
             password: [
                 /\S+/
             ],
+            role: [
+                /\S+/
+            ],
+            course: [
+                /\S+/
+            ],
             degree: [
                 /\S+/
             ],
