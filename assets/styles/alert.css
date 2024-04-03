@@ -22,7 +22,7 @@
 
     position: relative;
     padding: 12px 15px;
-    max-width: min(calc(100% - 20px), 380px);
+    max-width: min(calc(100% - 20px), 300px);
     border-radius: 10px;
     border: 2px solid transparent;
     background-color: black;

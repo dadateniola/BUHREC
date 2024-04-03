@@ -1,3 +1,6 @@
+const fs = require('fs').promises;
+const path = require('path');
+
 class Methods {
     constructor(params = {}) {
         Object.assign(this, params);
@@ -33,7 +36,6 @@ class Methods {
             cvv: [
                 /^\d{3}$/
             ]
-
         };
 
         const result = {
@@ -101,6 +103,26 @@ class Methods {
         const capitalizedSentence = capitalizedWords.join(' ');
 
         return capitalizedSentence;
+    }
+
+    static async checkFileExistence(params = {}) {
+        const { filePath } = params;
+
+        try {
+            await fs.stat(filePath);
+            return true;
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                return false;
+            } else {
+                console.error('Error checking file:', err);
+                return false;
+            }
+        }
+    }
+
+    static tempFilename(id = null) {
+        return id?.split("/").join("-") + '.pdf';
     }
 }
 

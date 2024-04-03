@@ -73,7 +73,7 @@ class Methods {
         //     attributes: Attributes of the element being created, can be array or String
         // }
 
-        const { type, text, append, parent, before, classes, properties, attributes } = params;
+        const { type, text, append, parent, before, classes, properties, attributes, no_data } = params;
 
         if (!type) return null;
 
@@ -106,8 +106,8 @@ class Methods {
         }
 
         if (attributes?.length) {
-            if (Array.isArray(attributes)) attributes.forEach(a => element.setAttribute(`data-${a}`, ''));
-            else element.setAttribute(`data-${attributes}`, '');
+            if (Array.isArray(attributes)) attributes.forEach(([a, v]) => element.setAttribute(`${no_data ? '' : 'data-'}${a}`, v || ''));
+            else element.setAttribute(`${no_data ? '' : 'data-'}${attributes}`, '');
         }
 
         //Append element to parent
@@ -180,6 +180,10 @@ class CommonSetup {
 
             new Alert({ type, message })
         }
+
+        select(`a[href='${window.location.pathname}']`)?.classList.add("highlight");
+
+        select("input[type='file']")?.addEventListener('change', CommonSetup.handleFileSelect);
     }
 
     //Attach spinner to elements
@@ -235,6 +239,161 @@ class CommonSetup {
                 elem.removeAttribute("data-innerText");
             }
         }, 300);
+    }
+
+    //FIle select
+    static handleFileSelect(event) {
+        const input = event.target;
+        const file = input.files[0];
+
+        CommonSetup.uploadFile({ file, input });
+
+        // if (file && file.type === 'application/pdf') {
+        //     CommonSetup.uploadFile({ file, input });
+        // } else {
+        //     new Alert({ message: 'Please select a valid PDF file', type: 'warning' });
+        //     CommonSetup.resetFileInput(input);
+        // }
+    }
+
+    static uploadFile(params = {}) {
+        const { file, input } = params;
+        const uploadBox = select("#upload-box");
+
+        if (!file || !input) {
+            new Alert({
+                message: 'Something went wrong, please try again',
+                type: 'warning'
+            });
+            return console.warn("Both a file and its input are required to 'uploadFile'");
+        }
+
+        const upload = CommonSetup.attachUpload({ file });
+        const bar = selectWith(upload, ".upload-progress-box");
+
+        gsap.to(upload, { x: 0, opacity: 1, ease: 'Back.easeOut' });
+
+        const formData = new FormData();
+        formData.append('pdfFile', file);
+
+        const xhr = new XMLHttpRequest();
+
+        xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+                const complete = ((event.loaded / event.total) * 360).toFixed(1);
+                bar.style.background = `conic-gradient(var(--malachite) ${complete}deg, var(--errie-black) 0deg)`;
+            }
+        });
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText)
+                    displayPreview(data.filename);
+                    new Alert({ message: 'File upload complete', type: 'success' });
+
+                    gsap.to(upload, {
+                        delay: 0.8,
+                        y: '100%',
+                        opacity: 0,
+                        ease: 'Expo.easeIn',
+                        onComplete: () => {
+                            CommonSetup.resetFileInput(input, upload);
+                        }
+                    });
+                } else if (xhr.status === 0) {
+                    console.log('Upload cancelled by user');
+                } else {
+                    const data = JSON.parse(xhr.responseText)
+                    new Alert(data);
+
+                    gsap.to(upload, {
+                        delay: 0.8,
+                        y: '100%',
+                        opacity: 0,
+                        ease: 'Expo.easeIn',
+                        onComplete: () => {
+                            CommonSetup.resetFileInput(input, upload);
+                        }
+                    });
+                }
+            }
+        }
+
+        function displayPreview(filename = '') {
+            const parent = select(`label[data-preview="${input.name}"]`);
+
+            if (!(parent instanceof HTMLElement)) return console.warn('A parent is required to "displayPreview"');
+
+            selectWith(parent, 'iframe')?.remove();
+
+            if (parent.children.length) parent.classList.add("none");
+
+            Methods.insertToDOM({
+                type: 'iframe',
+                parent,
+                attributes: [
+                    ['src', `/get-pdf/${filename}/preview`],
+                    ['width', '100%'],
+                    ['height', '100%']
+                ],
+                no_data: true
+            })
+        }
+
+        xhr.open('POST', '/upload', true);
+        xhr.send(formData);
+    }
+
+    static attachUpload(params = {}) {
+        const { file } = params;
+
+        if (!file) return console.warn("Couldn't 'attachUpload', file not found");
+
+        const name = file.name.split(".").slice(0, -1).join('.');
+        const ext = file.name.split(".").pop();
+        const size = ((file.size / 1024) / 1024).toFixed(2) + 'MB';
+
+        const html = `
+            <div class="upload-progress-box">
+                <div class="upload-progress-cont">
+                    <img src="/images/icons/watch.png" alt="icon">
+                </div>
+            </div>
+            <div class="upload-progress-text">
+                <div class="upload-name">
+                    <p data-upload-name>${name}</p>
+                    <p data-upload-ext>.${ext}</p>
+                </div>
+                <p class="sub"><span data-upload-done>0.0 MB</span> / <span data-upload-size>${size}</span></p>
+            </div>
+        `;
+
+        const upload = Methods.insertToDOM({
+            type: 'div',
+            parent: select("#upload-box"),
+            text: html,
+            classes: 'upload',
+            properties: {
+                transform: 'translateX(-100%)',
+                opacity: 0
+            }
+        })
+
+        return upload;
+    }
+
+    static resetFileInput(input, upload, parent) {
+        if (input) {
+            input.value = '';
+        }
+
+        upload.remove();
+
+        if (parent) {
+            selectWith(parent, 'iframe')?.remove();
+            parent.classList.remove("none");
+        }
     }
 }
 
