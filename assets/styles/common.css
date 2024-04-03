@@ -690,6 +690,15 @@ img[alt="pfp"] {
 
 
 
+#task,
+#add-task-overlay {
+    display: none;
+}
+
+[data-triggered] {
+    display: flex !important;
+}
+
 #add-task-overlay {
     position: fixed;
     padding: var(--general-padding);
@@ -700,7 +709,6 @@ img[alt="pfp"] {
     background-color: var(--errie-black);
     z-index: 10;
 
-    display: none;
     /* display: flex; */
     flex-direction: column;
     gap: var(--general-padding);
@@ -846,7 +854,7 @@ p.sub {
 
 
 #task {
-    --task-sidebar: 350px;
+    --task-sidebar: 400px;
     --task-padding: calc(var(--general-padding) * 1.4);
 
     position: fixed;
@@ -857,7 +865,6 @@ p.sub {
     background-color: var(--errie-black);
     z-index: 10;
 
-    display: none;
     /* display: flex; */
 }
 
@@ -1042,14 +1049,25 @@ span.glow {
     color: var(--sub);
 }
 
+.profile-row {
+    display: flex;
+    gap: 10px;
+}
+
 .chat-profile-cont a {
     display: inline-block;
-    padding: 13px 15px;
+    padding: 12px 13px;
     font-size: var(--tiny-text);
     color: black;
     background-color: var(--wisteria);
     border-radius: 10px;
     font-weight: 600;
+}
+
+.profile-row button {
+    padding: 12px 13px;
+    font-size: var(--tiny-text);
+    border: none;
 }
 
 .activity {

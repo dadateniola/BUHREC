@@ -14,14 +14,20 @@
 
 <body>
 
+    <%- include('partials/alert') %>
+
     <main>
         <div class="landing">
             <div class="landing-info">
                 <div class="landing-heading">
                     <h1>Elevate your<br>proposals with<br>expert reviews!</h1>
                     <div class="landing-links">
-                        <a href="/login">Login to your account</a>
-                        <a href="/signup">Create an account</a>
+                        <% if (isLoggedIn) { %>
+                            <a href="/dashboard">Go to dashboard</a>
+                        <% } else { %>
+                            <a href="/login">Login to your account</a>
+                            <a href="/signup">Create an account</a>
+                        <% } %>
                     </div>
                 </div>
                 <div class="landing-about">

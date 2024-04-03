@@ -127,8 +127,8 @@ class Methods {
         }
     }
 
-    static tempFilename(id = null) {
-        return id?.split("/").join("-") + '.pdf';
+    static tempFilename(id = '') {
+        return id.toString() + '.pdf';
     }
 }
 

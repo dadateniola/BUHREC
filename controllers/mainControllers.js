@@ -6,6 +6,16 @@ const UserRole = require("../Models/UserRole");
 
 const DEFAULT_USER_ID = '1';
 
+const error_alert = {
+    message: 'Internal Server Error',
+    type: 'error'
+}
+
+const unauthorized_alert = {
+    message: 'Cannot access the requested page',
+    type: 'warning'
+}
+
 const tempFolder = path.resolve(__dirname, '..', 'temp');
 const uploadsFolder = path.resolve(__dirname, '..', 'uploads', 'resources');
 
@@ -14,16 +24,16 @@ function isObject(value) {
 }
 
 const routeSetup = async (req, res, next) => {
-    req.session.uid = DEFAULT_USER_ID;
+    // req.session.uid = DEFAULT_USER_ID;
     const { alert, uid } = req.session;
 
-    // if (!uid) {
-    //     req.session.alert = {
-    //         message: "User login is required",
-    //         type: 'warning',
-    //     }
-    //     return res.redirect("/");
-    // }
+    if (!uid) {
+        req.session.alert = {
+            message: "User login is required",
+            type: 'warning',
+        }
+        return res.redirect("/");
+    }
 
     try {
         const [user] = await User.find(['id', uid]);
@@ -32,7 +42,7 @@ const routeSetup = async (req, res, next) => {
         //     return res.redirect("/logout");
         // }
 
-        const filename = Methods.tempFilename(uid);
+        const filename = Methods.tempFilename(user.id);
         const filePath = path.join(tempFolder, filename);
         const previewRoute = (await Methods.checkFileExistence({ filePath })) ? `/get-pdf/${filename}/preview` : null;
 
@@ -52,8 +62,16 @@ const routeSetup = async (req, res, next) => {
     }
 }
 
-const showLandingPage = (req, res) => {
-    res.render("landing");
+const showLandingPage = async (req, res) => {
+    const { alert, uid } = req.session;
+    const user_id = uid || 0;
+
+    const user = await User.find(['id', user_id]);
+    const isLoggedIn = user.length;
+
+    delete req.session.alert;
+
+    res.render("landing", { alert, isLoggedIn });
 }
 
 const showSignUpPage = (req, res) => {
@@ -159,17 +177,25 @@ const handleLogin = async (req, res) => {
 
         const { email, password } = req.body;
 
-        const user = await User.find(['email', email]);
+        const [user] = await User.find(['email', email]);
 
-        if (user.length) {
+        if (user) {
             const next = 'verification-&-validation';
 
             req.session.login.completed.push(req.session.login.active);
             req.session.login.active = next;
-            console.log(req.session);
+
+            const completed = req.session.login.completed;
+
+            // Set user session ID
+            req.session.uid = user.id;
+
+            // Clear session data
+            delete req.session.login;
+        
             res.status(200).send({
                 next,
-                completed: req.session.login.completed,
+                completed,
                 alert: { message: 'Authentication successful, please wait as we clean up', type: 'success' },
             });
         } else {
@@ -273,40 +299,58 @@ const handleExtra = async (req, res) => {
 }
 
 const handlePayment = async (req, res) => {
-    //Validate user information
+    // Validate user information
     const methods = new Methods(req.body);
     const { invalidKeys } = methods.validateData();
 
-    //Check if there is invalid data to send back to user
-    if (Object.keys(invalidKeys).length > 0) return res.send({ invalidKeys });
+    // Check if there is invalid data to send back to user
+    if (Object.keys(invalidKeys).length > 0) {
+        return res.send({ invalidKeys });
+    }
 
     try {
+        // Create user account
         const user = new User(req.session.info);
-        await user.add();
+        const result = await user.add();
 
+        if (!result) {
+            // Handle user creation failure
+            return res.status(500).send({
+                message: "Couldn't create user account, please reload the page and try again.",
+                type: "error",
+            });
+        }
+
+        // Update session information
         const next = 'verification-&-validation';
-
+        
         req.session.signup.completed.push(req.session.signup.active);
         req.session.signup.active = next;
 
+        const completed = req.session.signup.completed;
+
+        // Set user session ID
+        req.session.uid = user.id;
+
+        // Clear session data
+        delete req.session.info;
+        delete req.session.signup;
+
+        // Send response
         res.status(200).send({
             next,
-            completed: req.session.signup.completed,
+            completed,
             alert: { message: 'Credit card added successfully, please wait as we clean up', type: 'success' },
         });
     } catch (error) {
-        console.log(error);
+        console.log(error); // Log error for debugging
         res.status(500).send({ message: 'Internal server error, please try again', type: 'error' });
     }
 }
 
+
 const handleUpload = async (req, res) => {
     if (!req?.files) return (req.aborted) ? console.log('Request aborted but still received') : console.log('Files not received');
-
-    //Remove this
-    //------------------------------
-    req.session.uid = '1';
-    //------------------------------
 
     const { pdfFile } = req.files;
     const userId = req.session?.uid;

@@ -4,18 +4,6 @@ const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, hand
 
 const router = Router();
 
-router.use(routeSetup);
-
-router.get('/', showLandingPage);
-
-router.get("/signup", showSignUpPage);
-
-router.get("/login", showLoginPage);
-
-router.get("/dashboard", showDashboard);
-
-router.get("/tasks", showTasksPage);
-
 
 router.post("/get-form", getForms);
 
@@ -32,5 +20,20 @@ router.post("/finalize-payment", handlePayment);
 router.post("/upload", handleUpload);
 
 router.get('/get-pdf/:file/:type?', getPDF);
+
+router.get('/', showLandingPage);
+
+router.get("/signup", showSignUpPage);
+
+router.get("/login", showLoginPage);
+
+
+router.use(routeSetup);
+
+
+router.get("/dashboard", showDashboard);
+
+router.get("/tasks", showTasksPage);
+
 
 module.exports = router;

@@ -358,9 +358,52 @@ class CommonSetup {
             new Alert({ type, message })
         }
 
+
         select(`a[href='${window.location.pathname}']`)?.classList.add("highlight");
+        
+        selectAll("[data-trigger]").forEach(elem => {
+            elem.addEventListener("click", function() {
+                CommonSetup.handleTrigger(elem);
+            })
+        });
+
+        selectAll("[data-close]").forEach(elem => elem.addEventListener("click", CommonSetup.closeOverlay));
 
         select("input[type='file']")?.addEventListener('change', CommonSetup.handleFileSelect);
+    }
+
+    //Trigger ovaelay
+    static handleTrigger(elem) {
+        const trigger = elem.getAttribute("data-trigger");
+        const identifier = elem.getAttribute("data-identifier");
+        
+        CommonSetup.triggerOverlay(trigger);
+    }
+
+    static triggerOverlay(trigger) {
+        const overlay = select(`#${trigger}`);
+        const children = overlay.children;
+        const tl = gsap.timeline();
+
+        tl
+            .set(overlay, { opacity: 0 })
+            .set(children, { opacity: 0 })
+            .call(() => {
+                overlay.setAttribute("data-triggered", '');
+            })
+            .to(overlay, { opacity: 1 })
+            .to(children, { opacity: 1, stagger: 0.2 })
+    }
+
+    static closeOverlay() {
+        const overlay = selectAll("[data-triggered]");
+        const tl = gsap.timeline();
+
+        tl
+            .to(overlay, { opacity: 0 })
+            .call(() => {
+                overlay.forEach(elem => elem.removeAttribute("data-triggered"));
+            })
     }
 
     //Attach spinner to elements
@@ -418,7 +461,7 @@ class CommonSetup {
         }, 300);
     }
 
-    //FIle select
+    //File select
     static handleFileSelect(event) {
         const input = event.target;
         const file = input.files[0];
