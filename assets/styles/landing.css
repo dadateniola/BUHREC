@@ -1,15 +1,12 @@
 main {
     width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
+    display: block;
 }
 
 .landing {
-    width: 100%;
+    height: calc(100vh - 40px);
     flex: 1;
     display: flex;
-    /* overflow: hidden; */
 }
 
 .landing>* {
@@ -85,7 +82,7 @@ main {
 }
 
 .landing-slider {
-    height: 65%;
+    flex: 1;
 }
 
 .slider {
@@ -101,10 +98,21 @@ main {
 }
 
 .landing-row {
-    flex: 1;
+    height: 195px;
     display: flex;
     gap: 20px;
-    background-color: #fff;
+}
+
+.landing-row-slider {
+    padding: 5px;
+    background-color: var(--dark);
+    flex: 1;
+    border: 2px solid var(--wisteria);
+}
+
+.landing-row-slider img {
+    object-fit: cover;
+    object-position: top center;
 }
 
 .landing-row>* {
@@ -118,7 +126,7 @@ main {
 
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    justify-content: space-between;
 }
 
 .avatars {
