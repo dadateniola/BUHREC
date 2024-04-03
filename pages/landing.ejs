@@ -33,10 +33,10 @@
                 </div>
             </div>
             <div class="landing-img">
-                <div class="slider landing-slider">
+                <div class="landing-slider" data-type="slider">
                     <img src="/images/others/man.jpg" alt="img">
-                    <!-- <img src="/images/others/girl.jpg" alt="img">
-                    <img src="/images/others/girls.jpg" alt="img"> -->
+                    <img src="/images/others/girl.jpg" alt="img">
+                    <img src="/images/others/girls.jpg" alt="img">
                 </div>
                 <div class="landing-row">
                     <div class="members">
@@ -56,8 +56,8 @@
                         </div>
                         <p class="members-text">Sigma males at work</p>
                     </div>
-                    <div class="landing-row-slider slider">
-                        <img src="/images/UI/Task.png" alt="img">
+                    <div class="landing-row-slider hero-img" data-type="slider">
+                        <img src="/images/UI/slide (1).png" alt="img">
                     </div>
                 </div>
             </div>
@@ -80,6 +80,48 @@
             </div>
         </div>
     </main>
+
+    <%- include('partials/foot') %>
+        <script>
+            new Slider({ slider: select("[data-type='slider']"), gap: 15 });
+
+            var newSlide = true;
+            const slideStart = 1;
+
+            function slider() {
+                const slide = document.querySelector(".hero-img");
+                const maxSlide = 3;
+
+                const tl = gsap.timeline();
+
+                var currentSlide = parseInt(slide.dataset?.slide) || 1;
+                currentSlide = (currentSlide % maxSlide == 0) ? slideStart : currentSlide + 1;
+                slide.dataset.slide = currentSlide;
+
+                const img = document.createElement('img');
+                img.src = `/images/UI/slide (${currentSlide}).png`;
+
+                tl
+                    .set(img, { scale: 1.4, opacity: 0 })
+                    .call(() => slide.appendChild(img))
+                    .to(img, { opacity: 1, delay: newSlide ? 2 : 0 })
+                    .to(img, { scale: 1, duration: 6, ease: 'Expo.easeOut' }, '<')
+                    .call(() => {
+                        console.log("ran");
+                        newSlide = false;
+                        slide.querySelector('img').remove();
+                        slider();
+                    })
+            }
+
+            const tl = gsap.timeline();
+
+            tl
+                .set(".hero-img img", { scale: 1.4, opacity: 0 })
+                .to(".hero-img img", { scale: 1, opacity: 1, ease: "Expo.easeOut", duration: 2, delay: 2 })
+                .call(() => slider());
+
+        </script>
 
 </body>
 
