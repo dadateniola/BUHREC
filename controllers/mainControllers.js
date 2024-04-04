@@ -68,7 +68,7 @@ async function get_tasks_info(params = {}) {
 }
 
 const routeSetup = async (req, res, next) => {
-    req.session.uid = DEFAULT_USER_ID;
+    // req.session.uid = DEFAULT_USER_ID;
     const { alert, uid } = req.session;
 
     if (!uid) {

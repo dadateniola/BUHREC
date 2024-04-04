@@ -45,6 +45,6 @@ CREATE TABLE IF NOT EXISTS activities (
 
 INSERT INTO users (`email`, `password`, `fullname`, `role`, `course`, `pfp`)
 VALUES 
-    ('student@example.com', 'pass', 'John Doe', 'student', 'Software Engineering', 'avatar-2.png'),
-    ('researcher@example.com', 'pass', 'Alice Smith', 'researcher', 'Computer Science', 'avatar-3.png'),
-    ('reviewer@example.com', 'pass', 'Bob Johnson', 'reviewer', 'Information Technology', 'avatar-4.png');
+    ('student@gmail.com', 'pass', 'John Doe', 'student', 'Software Engineering', 'avatar-2.png'),
+    ('researcher@gmail.com', 'pass', 'Alice Smith', 'researcher', 'Computer Science', 'avatar-3.png'),
+    ('reviewer@gmail.com', 'pass', 'Bob Johnson', 'reviewer', 'Information Technology', 'avatar-4.png');
