@@ -19,9 +19,96 @@
         <main class="main-content">
             <div class="content-head">
                 <h1>tasks</h1>
-                <span class="user-role">student</span>
+                <span class="user-role"><%= data.user.role %></span>
             </div>
-            <section>
+            <% allTasks.forEach(tasks => { %>
+                <section>
+                    <div class="section-head">
+                        <div class="section-text">
+                            <h1><%= tasks.title %></h1>
+                            <p><span class="highlight"><%= tasks.data.length %> total</span>, proceed to resolve them</p>
+                        </div>
+                        <div class="section-cta">
+                            <% if (data.user.role != "reviewer") { %>
+                                <button class="add-to-task" data-trigger="add-task-overlay">
+                                    <img src="/images/icons/add.png" alt="icon">
+                                    <p>Add a new task</p>
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                    <% if (tasks.data.length) { %>
+                        <div class="section-table">
+                            <table>
+                                <colgroup>
+                                    <col>
+                                    <col style="width: 200px;" span="2">
+                                    <col style="width: 180px;" span="2">
+                                    <col style="width: 100px;">
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th>name</th>
+                                        <th>course</th>
+                                        <th>reviewer</th>
+                                        <th>status</th>
+                                        <th>date posted</th>
+                                        <th>action</th>
+                                    </tr>
+                                    <% tasks.data.forEach(task => { %>
+                                        <tr data-trigger="task" data-identifier="<%= task.id %>">
+                                            <td>
+                                                <p><%= task.task_name %></p>
+                                            </td>
+                                            <td>
+                                                <p><%= task.course %></p>
+                                            </td>
+                                            <td>
+                                                <% if (task.reviewer_id) { %>
+                                                <% const user_info = data.allUsers.find(user => user.id == task.reviewer_id); %>
+                                                    <div class="pfp-img">
+                                                        <img src="/images/avatars/<%= user_info.pfp %>" alt="pfp">
+                                                        <% if (data.user.id == user_info.id) { %>
+                                                            <p class="glow"><%= user_info.fullname %> (you)</p>
+                                                        <% } else { %>
+                                                            <p><%= user_info.fullname %></p>
+                                                        <% } %>
+                                                    </div>
+                                                <% } else { %>
+                                                    <div class="pending-icon">
+                                                        <div class="pend"></div>
+                                                        <div class="pend"></div>
+                                                        <div class="pend"></div>
+                                                    </div>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <div class="table-status" data-status="<%= task.status %>">
+                                                    <div class="status"></div>
+                                                    <p><%= task.status %></p>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <p><%= task.created %></p>
+                                            </td>
+                                            <td>
+                                                <div class="table-icon">
+                                                    <img src="/images/icons/arrow.png" alt="cta">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="section-empty">
+                            <p>No <%= tasks.title %> available</p>
+                        </div>
+                    <% } %>
+                </section>
+            <% }) %>
+            <!-- <section>
                 <div class="section-head">
                     <div class="section-text">
                         <h1>all tasks</h1>
@@ -44,211 +131,211 @@
                         </div>
                     </div>
                 </div>
-                <div class="section-table">
-                    <table>
-                        <colgroup>
-                            <col>
-                            <col style="width: 200px;" span="2">
-                            <col style="width: 180px;" span="2">
-                            <col style="width: 100px;">
-                        </colgroup>
-                        <tbody>
-                            <tr>
-                                <th>name</th>
-                                <th>course</th>
-                                <th>reviewer</th>
-                                <th>status</th>
-                                <th>finish date</th>
-                                <th>action</th>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>online library management system (OLMS)</p>
-                                </td>
-                                <td>
-                                    <p>computer science</p>
-                                </td>
-                                <td>
-                                    <div class="pfp-img">
-                                        <img src="/images/avatars/avatar-1.png" alt="pfp">
-                                        <p>ezenagu divine</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="table-status" data-status="in progress">
-                                        <div class="status"></div>
-                                        <p>in progress</p>
-                                    </div>
-                                </td>
-                                <td>7 Jul 2024</td>
-                                <td>
-                                    <div class="table-icon">
-                                        <img src="/images/icons/arrow.png" alt="cta">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>learning management system (LMS)</p>
-                                </td>
-                                <td>
-                                    <p>software engineering</p>
-                                </td>
-                                <td>
-                                    <div class="pending-icon">
-                                        <div class="pend"></div>
-                                        <div class="pend"></div>
-                                        <div class="pend"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="table-status" data-status="pending">
-                                        <div class="status"></div>
-                                        <p>pending</p>
-                                    </div>
-                                </td>
-                                <td>4 Jun 2024</td>
-                                <td>
-                                    <div class="table-icon">
-                                        <img src="/images/icons/arrow.png" alt="cta">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>E-commerce platform for local artisans</p>
-                                </td>
-                                <td>
-                                    <p>Electrical Engineering</p>
-                                </td>
-                                <td>
-                                    <div class="pfp-img">
-                                        <img src="/images/avatars/avatar-2.png" alt="pfp">
-                                        <p>Michael Brown</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="table-status" data-status="complete">
-                                        <div class="status"></div>
-                                        <p>complete</p>
-                                    </div>
-                                </td>
-                                <td>10 Jan 2023</td>
-                                <td>
-                                    <div class="table-icon">
-                                        <img src="/images/icons/arrow.png" alt="cta">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Health monitoring system using wearable devices</p>
-                                </td>
-                                <td>
-                                    <p>Business Administration</p>
-                                </td>
-                                <td>
-                                    <div class="pfp-img">
-                                        <img src="/images/avatars/avatar-3.png" alt="pfp">
-                                        <p>Sarah Davis</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="table-status" data-status="complete">
-                                        <div class="status"></div>
-                                        <p>complete</p>
-                                    </div>
-                                </td>
-                                <td>10 Jan 2023</td>
-                                <td>
-                                    <div class="table-icon">
-                                        <img src="/images/icons/arrow.png" alt="cta">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Smart home automation system</p>
-                                </td>
-                                <td>
-                                    <p>Psychology</p>
-                                </td>
-                                <td>
-                                    <div class="pfp-img">
-                                        <img src="/images/avatars/avatar-4.png" alt="pfp">
-                                        <p>David Wilson</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="table-status" data-status="in progress">
-                                        <div class="status"></div>
-                                        <p>in progress</p>
-                                    </div>
-                                </td>
-                                <td>10 Sep 2023</td>
-                                <td>
-                                    <div class="table-icon">
-                                        <img src="/images/icons/arrow.png" alt="cta">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Online tutoring platform for remote learning</p>
-                                </td>
-                                <td>
-                                    <p>Mechanical Engineering</p>
-                                </td>
-                                <td>
-                                    <div class="pending-icon">
-                                        <div class="pend"></div>
-                                        <div class="pend"></div>
-                                        <div class="pend"></div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="table-status" data-status="pending">
-                                        <div class="status"></div>
-                                        <p>pending</p>
-                                    </div>
-                                </td>
-                                <td>3 Feb 2023</td>
-                                <td>
-                                    <div class="table-icon">
-                                        <img src="/images/icons/arrow.png" alt="cta">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>Social networking platform for professionals</p>
-                                </td>
-                                <td>
-                                    <p>Linguistics</p>
-                                </td>
-                                <td>
-                                    <div class="pfp-img">
-                                        <img src="/images/avatars/avatar-7.png" alt="pfp">
-                                        <p>Jessica Anderson</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="table-status" data-status="complete">
-                                        <div class="status"></div>
-                                        <p>complete</p>
-                                    </div>
-                                </td>
-                                <td>30 Jun 2023</td>
-                                <td>
-                                    <div class="table-icon">
-                                        <img src="/images/icons/arrow.png" alt="cta">
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </section>
+            <div class="section-table">
+                <table>
+                    <colgroup>
+                        <col>
+                        <col style="width: 200px;" span="2">
+                        <col style="width: 180px;" span="2">
+                        <col style="width: 100px;">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>name</th>
+                            <th>course</th>
+                            <th>reviewer</th>
+                            <th>status</th>
+                            <th>finish date</th>
+                            <th>action</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>online library management system (OLMS)</p>
+                            </td>
+                            <td>
+                                <p>computer science</p>
+                            </td>
+                            <td>
+                                <div class="pfp-img">
+                                    <img src="/images/avatars/avatar-1.png" alt="pfp">
+                                    <p>ezenagu divine</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-status" data-status="in progress">
+                                    <div class="status"></div>
+                                    <p>in progress</p>
+                                </div>
+                            </td>
+                            <td>7 Jul 2024</td>
+                            <td>
+                                <div class="table-icon">
+                                    <img src="/images/icons/arrow.png" alt="cta">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>learning management system (LMS)</p>
+                            </td>
+                            <td>
+                                <p>software engineering</p>
+                            </td>
+                            <td>
+                                <div class="pending-icon">
+                                    <div class="pend"></div>
+                                    <div class="pend"></div>
+                                    <div class="pend"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-status" data-status="pending">
+                                    <div class="status"></div>
+                                    <p>pending</p>
+                                </div>
+                            </td>
+                            <td>4 Jun 2024</td>
+                            <td>
+                                <div class="table-icon">
+                                    <img src="/images/icons/arrow.png" alt="cta">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>E-commerce platform for local artisans</p>
+                            </td>
+                            <td>
+                                <p>Electrical Engineering</p>
+                            </td>
+                            <td>
+                                <div class="pfp-img">
+                                    <img src="/images/avatars/avatar-2.png" alt="pfp">
+                                    <p>Michael Brown</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-status" data-status="complete">
+                                    <div class="status"></div>
+                                    <p>complete</p>
+                                </div>
+                            </td>
+                            <td>10 Jan 2023</td>
+                            <td>
+                                <div class="table-icon">
+                                    <img src="/images/icons/arrow.png" alt="cta">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Health monitoring system using wearable devices</p>
+                            </td>
+                            <td>
+                                <p>Business Administration</p>
+                            </td>
+                            <td>
+                                <div class="pfp-img">
+                                    <img src="/images/avatars/avatar-3.png" alt="pfp">
+                                    <p>Sarah Davis</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-status" data-status="complete">
+                                    <div class="status"></div>
+                                    <p>complete</p>
+                                </div>
+                            </td>
+                            <td>10 Jan 2023</td>
+                            <td>
+                                <div class="table-icon">
+                                    <img src="/images/icons/arrow.png" alt="cta">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Smart home automation system</p>
+                            </td>
+                            <td>
+                                <p>Psychology</p>
+                            </td>
+                            <td>
+                                <div class="pfp-img">
+                                    <img src="/images/avatars/avatar-4.png" alt="pfp">
+                                    <p>David Wilson</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-status" data-status="in progress">
+                                    <div class="status"></div>
+                                    <p>in progress</p>
+                                </div>
+                            </td>
+                            <td>10 Sep 2023</td>
+                            <td>
+                                <div class="table-icon">
+                                    <img src="/images/icons/arrow.png" alt="cta">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Online tutoring platform for remote learning</p>
+                            </td>
+                            <td>
+                                <p>Mechanical Engineering</p>
+                            </td>
+                            <td>
+                                <div class="pending-icon">
+                                    <div class="pend"></div>
+                                    <div class="pend"></div>
+                                    <div class="pend"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-status" data-status="pending">
+                                    <div class="status"></div>
+                                    <p>pending</p>
+                                </div>
+                            </td>
+                            <td>3 Feb 2023</td>
+                            <td>
+                                <div class="table-icon">
+                                    <img src="/images/icons/arrow.png" alt="cta">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p>Social networking platform for professionals</p>
+                            </td>
+                            <td>
+                                <p>Linguistics</p>
+                            </td>
+                            <td>
+                                <div class="pfp-img">
+                                    <img src="/images/avatars/avatar-7.png" alt="pfp">
+                                    <p>Jessica Anderson</p>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="table-status" data-status="complete">
+                                    <div class="status"></div>
+                                    <p>complete</p>
+                                </div>
+                            </td>
+                            <td>30 Jun 2023</td>
+                            <td>
+                                <div class="table-icon">
+                                    <img src="/images/icons/arrow.png" alt="cta">
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> -->
         </main>
 
     <%- include('partials/foot') %>

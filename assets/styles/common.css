@@ -192,8 +192,15 @@ label {
     text-transform: capitalize;
     font-size: var(--text);
     cursor: pointer;
+} 
+
+.stars {
+    color: var(--sub);
+    font-style: italic;
 }
 
+.stars::before,
+.stars::after,
 label:not(.no-star)::after {
     content: "*";
     color: red;
@@ -925,6 +932,14 @@ p.sub {
 
 .task-info-text h1 {
     color: var(--sub);
+}
+
+.task-info-cta button {
+    background-color: var(--malachite);
+}
+
+.task-info-text span.glow {
+    text-transform: capitalize;
 }
 
 .pfp-text {

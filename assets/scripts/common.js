@@ -371,6 +371,8 @@ class CommonSetup {
         select("#pdfFile[type='file']")?.addEventListener('change', CommonSetup.handleFileSelect);
         select("#chatFiles[type='file']")?.addEventListener('change', CommonSetup.handleChatFiles);
 
+        select("[data-task-certify]")?.addEventListener("click", CommonSetup.certifyProposal)
+
         this.initializeForms();
         CommonSetup.initializeTriggers();
     }
@@ -405,6 +407,7 @@ class CommonSetup {
         select("[data-accept]").setAttribute("data-identifier", id);
         select("[data-accept]").addEventListener("click", CommonSetup.acceptProposal);
         select("#chatFiles[type='file']").setAttribute("data-identifier", id);
+        select("[data-task-certify]").setAttribute("data-identifier", id);
         select("#task_id[type='hidden']").value = id;
 
         try {
@@ -437,6 +440,7 @@ class CommonSetup {
             CommonSetup.showReviewer(task.reviewer_id, { user, owner, task, reviewer });
             CommonSetup.showActivities({ activities, allUsers });
             CommonSetup.showAttachments({ attachments });
+            CommonSetup.isComplete(task.status == 'complete');
 
             CommonSetup.initializeTriggers();
         } catch (error) {
@@ -495,6 +499,7 @@ class CommonSetup {
         const chatBox = select("#chat-box");
         const chatCTA = select("#chat-cta");
         const chatClose = select("#chat-close");
+        const certify = select("#certify");
         const parent = select("#reviewer-box");
         var text = '';
         var classes = '';
@@ -546,6 +551,7 @@ class CommonSetup {
         } else {
             if (isReviewer || isOwnTask) {
                 chatBox.classList.remove("hidden");
+                if (isReviewer) certify.classList.remove("hidden");
             } else if (isNotStudent) {
                 chatBox.classList.add("hidden");
                 chatCTA.classList.add("hidden");
@@ -671,10 +677,26 @@ class CommonSetup {
         })
     }
 
+    static isComplete(condition) {
+        const certify = select("#certify");
+        const certified = select("#certified");
+        const chatBox = select("#chat-box");
+        const chatClose = select("#chat-close");
+
+        if (condition) {
+            certify.classList.add("hidden");
+            certified.classList.remove("hidden");
+
+            chatBox.classList.add("hidden");
+            chatClose.classList.remove("hidden");
+        }
+    }
+
     static clearTriggered() {
         const chatBox = select("#chat-box").classList.add("hidden");
         const chatCTA = select("#chat-cta").classList.add("hidden");
         const chatClose = select("#chat-close").classList.add("hidden");
+        const certify = select("#certify").classList.add("hidden");
 
         selectAll("[data-task-inserted]").forEach(elem => {
             elem.innerHTML = '-';
@@ -722,6 +744,41 @@ class CommonSetup {
             CommonSetup.attachSpinner({ elem: button });
 
             const response = await fetch('/accept-task', {
+                method: 'POST',
+                body: JSON.stringify({ id }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            };
+
+            const data = await response.json();
+
+            new Alert(data);
+            CommonSetup.detachSpinner({ elem: button });
+
+            CommonSetup.refreshProposal(id);
+        } catch (error) {
+            new Alert({
+                message: "Couldn't accept proposal, please try again",
+                type: 'error'
+            });
+            CommonSetup.detachSpinner({ elem: button });
+            console.error('Fetch error:', error.message);
+        }
+    }
+
+    static async certifyProposal() {
+        const button = this;
+        const id = button.dataset.identifier;
+
+        try {
+            CommonSetup.attachSpinner({ elem: button });
+
+            const response = await fetch('/certify-task', {
                 method: 'POST',
                 body: JSON.stringify({ id }),
                 headers: {
@@ -1065,7 +1122,7 @@ class CommonSetup {
 
                         if (data?.clean_up) {
                             if (data.clean_up == 'message') {
-                               CommonSetup.refreshProposal(data.task_id); 
+                                CommonSetup.refreshProposal(data.task_id);
                             }
                         }
 
@@ -1170,4 +1227,3 @@ class Alert {
 }
 
 new CommonSetup();
-// CommonSetup.handleTaskTrigger(2);

@@ -6,7 +6,7 @@ const User = require("../Models/User");
 const Task = require("../Models/Task");
 const Activity = require("../Models/Activity");
 
-const DEFAULT_USER_ID = '1';
+const DEFAULT_USER_ID = '3';
 
 const error_alert = {
     message: 'Internal Server Error',
@@ -48,6 +48,21 @@ async function get_dashboard_info(params = {}) {
 
     if (user.role != "student") tasks.push({ title: 'current tasks', data: Methods.formatAllDates(currentTasks) });
     if (user.role != "student") tasks.push({ title: 'open tasks', data: Methods.formatAllDates(openTasks) });
+
+    return tasks;
+}
+
+async function get_tasks_info(params = {}) {
+    const { uid, user } = params;
+    const tasks = [];
+
+    if (!uid) return [];
+
+    const recentTasks = await Task.find(['user_id', uid]);
+    const currentTasks = await Task.find(['reviewer_id', uid]);
+    const allTasks = [...recentTasks, ...currentTasks]
+
+    tasks.push({ title: 'all tasks', data: Methods.formatAllDates(allTasks) });
 
     return tasks;
 }
@@ -176,8 +191,13 @@ const showDashboard = async (req, res) => {
     res.render("dashboard", { allTasks });
 }
 
-const showTasksPage = (req, res) => {
-    res.render("tasks");
+const showTasksPage = async (req, res) => {
+    const uid = req.session.uid;
+    const [user] = await User.find(['id', uid]);
+
+    const allTasks = await get_tasks_info({ uid, user });
+
+    res.render("tasks", { allTasks });
 }
 
 const getForms = async (req, res) => {
@@ -473,7 +493,7 @@ const handleChatMessage = async (req, res) => {
     } catch (error) {
         console.error('Error adding message:', error);
         res.status(500).send({ message: 'Internal Server Error', type: 'error' });
-    }   
+    }
 }
 
 const handleAddingTasks = async (req, res) => {
@@ -571,6 +591,30 @@ const handleAcceptingTasks = async (req, res) => {
     }
 }
 
+const handleCertifyingTasks = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const data = {
+            id,
+            status: 'complete'
+        }
+
+        const task = new Task(data);
+        await task.update();
+
+        res.status(200).send({
+            message: "Proposal certified successfully",
+            type: "success",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            message: "Internal server error, please try again",
+            type: "error"
+        });
+    }
+}
+
 const getItems = async (req, res) => {
     const { table, custom, columns, userId } = req.body;
 
@@ -631,5 +675,6 @@ module.exports = {
     showSignUpPage, showLoginPage, getForms, handleLogin,
     handleSignUp, handleRole, handlePayment, showDashboard,
     showTasksPage, handleUpload, getPDF, handleExtra,
-    handleAcceptingTasks, handleChatUpload, handleChatMessage
+    handleAcceptingTasks, handleChatUpload, handleChatMessage,
+    handleCertifyingTasks
 }
