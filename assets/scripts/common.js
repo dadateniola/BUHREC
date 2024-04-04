@@ -417,7 +417,7 @@ class CommonSetup {
             const initUsers = new Items({ table: 'users', userId: true })
             const [user] = await initUsers.find();
 
-            const initOwner = new Items({ table: 'users', id: task.id })
+            const initOwner = new Items({ table: 'users', id: task.user_id })
             const [owner] = await initOwner.find();
 
             const initReviewer = new Items({ table: 'users', id: task.reviewer_id })
