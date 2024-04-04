@@ -6,7 +6,7 @@ const User = require("../Models/User");
 const Task = require("../Models/Task");
 const Activity = require("../Models/Activity");
 
-const DEFAULT_USER_ID = '3';
+const DEFAULT_USER_ID = '2';
 
 const error_alert = {
     message: 'Internal Server Error',
@@ -44,10 +44,10 @@ async function get_dashboard_info(params = {}) {
     const currentTasks = await Task.find(['reviewer_id', uid]);
     const openTasks = await Task.customSql(`SELECT * FROM tasks WHERE status = 'pending' AND user_id != ${uid}`);
 
-    if (user.role != 'reviewer') tasks.push({ title: 'recent tasks', data: Methods.formatAllDates(recentTasks) })
+    if (user.role != 'reviewer') tasks.push({ title: 'recent proposals', data: Methods.formatAllDates(recentTasks) })
 
-    if (user.role != "student") tasks.push({ title: 'current tasks', data: Methods.formatAllDates(currentTasks) });
-    if (user.role != "student") tasks.push({ title: 'open tasks', data: Methods.formatAllDates(openTasks) });
+    if (user.role != "student") tasks.push({ title: 'current proposals', data: Methods.formatAllDates(currentTasks) });
+    if (user.role != "student") tasks.push({ title: 'open proposals', data: Methods.formatAllDates(openTasks) });
 
     return tasks;
 }
@@ -62,7 +62,7 @@ async function get_tasks_info(params = {}) {
     const currentTasks = await Task.find(['reviewer_id', uid]);
     const allTasks = [...recentTasks, ...currentTasks]
 
-    tasks.push({ title: 'all tasks', data: Methods.formatAllDates(allTasks) });
+    tasks.push({ title: 'all proposals', data: Methods.formatAllDates(allTasks) });
 
     return tasks;
 }
