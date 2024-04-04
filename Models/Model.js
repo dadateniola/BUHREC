@@ -27,20 +27,22 @@ class Model {
         return pluralizedName.replace(/^_/, '').toLowerCase();
     }
 
-    static async find(filters = [], table = null) {
+    static async find(filters = [], table = null, columns = []) {
         let result = [];
         let params = [];
         let val = [];
         let operators = [];
-        let sql = `SELECT * FROM ${table || this.tableName}`;
+        let sql = `SELECT ${columns.length ? columns.join(', ') : '*'} FROM ${table || this.tableName}`;
 
         try {
             if (filters.length) {
                 if (Array.isArray(filters[0])) {
                     //Check if filters includes OR
                     let includesOr = filters.some(([p]) => p.toLowerCase() === 'or');
+                    let includesLike = filters.some(([p]) => p.toLowerCase() === 'like');
                     //Assign the operator (OR/AND)
                     let operator = (includesOr) ? "OR" : "AND";
+                    let separator = (includesLike) ? "LIKE" : "=";
 
                     //Check if filters contains order by
                     if (filters.map(item => item[0].toLowerCase()).includes("order by")) {
@@ -74,7 +76,7 @@ class Model {
                     //Add "where" in case there are still parameters after the operators have been removed
                     if (params.length) clause += ` WHERE`;
                     for (let i = 0; i < params.length; i++) {
-                        clause += ` ${params[i]} = ? ${operator}`;
+                        clause += ` ${params[i]} ${separator} ? ${operator}`;
                     }
 
                     //Remove the last (and/or)
@@ -89,7 +91,6 @@ class Model {
                     sql += ` WHERE ${params} = ?`;
                 }
             }
-
             let rows = await this.query(sql, val);
             for (const row of rows) {
                 result.push(new this(row));
@@ -119,11 +120,12 @@ class Model {
             console.error(`\n-- SQL: ${sql}\n-- Columns: ${columns}\n-- Values: ${values}\n-- ${error}\n`)
             console.error(error);
             return 0;
+            // return { no: error.errno, message: error.sqlMessage };
         }
     }
 
     async multiAdd() {
-        if(!this?.columns && !this?.values) return 0;
+        if (!this?.columns && !this?.values) return 0;
 
         const columns = this.columns.join(", ");
         const values = this.values.map(row => {
@@ -131,12 +133,12 @@ class Model {
                 return typeof value === 'string' ? `'${value}'` : value;
             });
         });
-        
+
         const sql = `INSERT INTO ${this.constructor.tableName} (${columns}) VALUES ${values.map(row => `(${row.join(', ')})`).join(", ")}`;
 
         try {
             const result = await this.constructor.query(sql);
-            
+
             if (result.affectedRows > 0) {
                 this.id = result.insertId;
                 return result.affectedRows;
@@ -174,7 +176,8 @@ class Model {
     static async customSql(sql, val = '') {
         try {
             const rows = await this.query(sql, val);
-            return rows.map(row => new this(row));
+
+            return (Array.isArray(rows)) ? rows?.map(row => new this(row)) : rows.affectedRows;
         } catch (error) {
             console.error(`Error executing custom SQL query:`, error);
             throw error;  // Rethrow the error to signal the failure

@@ -39,6 +39,12 @@ class Methods {
             expiration_year: [
                 /\S+/
             ],
+            task_name: [
+                /\S+/
+            ],
+            description: [
+                /\S+/
+            ],
             cvv: [
                 /^\d{3}$/
             ]
@@ -101,6 +107,12 @@ class Methods {
         throw new Error('Unable to generate a unique ID within the specified attempts.');
     }
 
+    static uniqueID() {
+        const timestamp = new Date().getTime().toString(36); // Convert timestamp to base36 string
+        const randomLetters = Math.random().toString(36).substr(2, 5); // Generate a random base36 string and take 5 characters
+        return `${timestamp}-${randomLetters}`; // Combine timestamp and random letters
+    }
+
     static capitalize(str = '') {
         const words = str.split(' ');
 
@@ -129,6 +141,53 @@ class Methods {
 
     static tempFilename(id = '') {
         return id.toString() + '.pdf';
+    }
+
+    static formatAllDates(data = []) {
+        const modified = [];
+
+        data.forEach(content => {
+            const { created_at, updated_at } = content;
+
+            content.created = Methods.formatDate(created_at);
+            content.updated = Methods.formatDate(updated_at);
+
+            modified.push(content);
+        })
+
+        return modified;
+    }
+
+    static formatDate(date = '') {
+        return date?.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        });
+    }
+
+    static async getPFP() {
+        try {
+            const filePath = path.resolve(__dirname, "..", "assets", "images", "avatars");
+
+            const files = await fs.readdir(filePath);
+
+            const avatars = files.filter(file => {
+                const extension = path.extname(file).toLowerCase();
+                return ['.png', '.jpg', '.jpeg', '.gif'].includes(extension);
+            });
+
+            if (avatars.length === 0) {
+                throw new Error('No image files found in the directory.');
+            }
+
+            const index = Math.floor(Math.random() * avatars.length);
+            const avatar = avatars[index];
+
+            return avatar;
+        } catch (error) {
+            throw error;
+        }
     }
 }
 

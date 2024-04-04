@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard, showTasksPage, handleUpload, getPDF, routeSetup, handleExtra, showLandingPage } = require("../controllers/mainControllers");
+const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard, showTasksPage, handleUpload, getPDF, routeSetup, handleExtra, showLandingPage, handleAddingTasks, getItems, handleAcceptingTasks, handleChatUpload, handleChatMessage } = require("../controllers/mainControllers");
 
 const router = Router();
 
@@ -19,7 +19,17 @@ router.post("/finalize-payment", handlePayment);
 
 router.post("/upload", handleUpload);
 
+router.post("/chat-upload", handleChatUpload)
+
+router.post("/chat-message", handleChatMessage)
+
+router.post("/add-task", handleAddingTasks);
+
+router.post("/accept-task", handleAcceptingTasks);
+
 router.get('/get-pdf/:file/:type?', getPDF);
+
+router.post('/get-items', getItems);
 
 router.get('/', showLandingPage);
 

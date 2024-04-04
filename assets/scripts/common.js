@@ -336,6 +336,14 @@ class Methods {
         input.classList.remove('error');
         input.removeEventListener("focus", Methods.removeErrorMsgs);
     }
+
+    static formatDate(date = '') {
+        return date?.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        });
+    }
 }
 
 class CommonSetup {
@@ -358,26 +366,325 @@ class CommonSetup {
             new Alert({ type, message })
         }
 
-
         select(`a[href='${window.location.pathname}']`)?.classList.add("highlight");
-        
-        selectAll("[data-trigger]").forEach(elem => {
-            elem.addEventListener("click", function() {
-                CommonSetup.handleTrigger(elem);
-            })
-        });
 
-        selectAll("[data-close]").forEach(elem => elem.addEventListener("click", CommonSetup.closeOverlay));
+        select("#pdfFile[type='file']")?.addEventListener('change', CommonSetup.handleFileSelect);
+        select("#chatFiles[type='file']")?.addEventListener('change', CommonSetup.handleChatFiles);
 
-        select("input[type='file']")?.addEventListener('change', CommonSetup.handleFileSelect);
+        this.initializeForms();
+        CommonSetup.initializeTriggers();
     }
 
-    //Trigger ovaelay
-    static handleTrigger(elem) {
+    static initializeTriggers() {
+        selectAll("[data-close]").forEach(elem => elem.removeEventListener("click", CommonSetup.closeOverlay));
+        selectAll("[data-trigger]").forEach(elem => elem.removeEventListener("click", CommonSetup.handleTrigger));
+
+        //-----------------------------------------------------
+
+        selectAll("[data-close]").forEach(elem => elem.addEventListener("click", CommonSetup.closeOverlay));
+        selectAll("[data-trigger]").forEach(elem => elem.addEventListener("click", CommonSetup.handleTrigger));
+    }
+
+    //Trigger overlay
+    static handleTrigger() {
+        const elem = this;
         const trigger = elem.getAttribute("data-trigger");
         const identifier = elem.getAttribute("data-identifier");
-        
+
+        if (trigger == 'task') CommonSetup.handleTaskTrigger(identifier);
+
         CommonSetup.triggerOverlay(trigger);
+    }
+
+    static async handleTaskTrigger(id) {
+        if (!id) {
+            new Alert({ message: "Missing identifier for proposal retrieval, please reload the page and try again", type: 'error' });
+            return;
+        }
+
+        select("[data-accept]").setAttribute("data-identifier", id);
+        select("[data-accept]").addEventListener("click", CommonSetup.acceptProposal);
+        select("#chatFiles[type='file']").setAttribute("data-identifier", id);
+        select("#task_id[type='hidden']").value = id;
+
+        try {
+            const initTasks = new Items({ table: 'tasks', id })
+            const [task] = await initTasks.find();
+
+            const initUsers = new Items({ table: 'users', userId: true })
+            const [user] = await initUsers.find();
+
+            const initOwner = new Items({ table: 'users', id: task.id })
+            const [owner] = await initOwner.find();
+
+            const initReviewer = new Items({ table: 'users', id: task.reviewer_id })
+            const [reviewer] = await initReviewer.find();
+
+            const initActivities = new Items({ table: 'activities', task_id: task.id })
+            const activities = await initActivities.find();
+
+            const initAttachments = new Items({ table: 'activities', task_id: task.id, type: 'file' })
+            const attachments = await initAttachments.find();
+
+            const initAllUsers = new Items({ custom: `SELECT * FROM users WHERE id IN (SELECT user_id FROM activities WHERE task_id = ${task.id})` })
+            const allUsers = await initAllUsers.find();
+
+            task.parent = select("#task");
+            task.attach_length = attachments.length;
+            CommonSetup.addData(task);
+
+            CommonSetup.showOwner({ owner, user });
+            CommonSetup.showReviewer(task.reviewer_id, { user, owner, task, reviewer });
+            CommonSetup.showActivities({ activities, allUsers });
+            CommonSetup.showAttachments({ attachments });
+
+            CommonSetup.initializeTriggers();
+        } catch (error) {
+            console.error('Error in handleTaskTrigger:', error);
+            new Alert({ message: "Error retrieving resource information, please try again", type: 'error' });
+        }
+    }
+
+    static addData(data = {}) {
+        const parent = (data?.parent instanceof HTMLElement) ? data.parent : null;
+
+        if (parent) {
+            delete data.parent;
+
+            selectAllWith(parent, "[data-delete]").forEach(e => e.remove());
+
+            for (const [key, value] of Object.entries(data)) {
+                const elem = selectWith(parent, `[data-task-${key}]`);
+
+                if (!elem) continue;
+
+                elem.innerText = value;
+                elem.setAttribute("data-task-inserted", "");
+            }
+        } else console.warn("No parent found");
+    }
+
+    static showOwner(data = {}) {
+        const { owner, user } = data;
+
+        const parent = select("#task-owner");
+        const text = `
+            <img src="/images/avatars/${owner.pfp}" alt="pfp">
+            <div class="pfp-text">
+                ${(owner.id == user.id) ?
+                `<p class="glow">${owner.fullname} (you)</p>` :
+                `<p>${owner.fullname}</p>`
+            }
+                <span>${owner.email}</span>
+            </div>
+        `;
+        Methods.insertToDOM({
+            type: 'div',
+            parent,
+            text,
+            classes: 'pfp-img',
+            attributes: [['delete', '']]
+        })
+    }
+
+    static showReviewer(condition = undefined, data = {}) {
+        if (condition === undefined) return console.warn("No condition to show reviewer");
+
+        const { user, owner, task, reviewer } = data;
+        const deadlne = select("[data-task-deadline]");
+        const chatBox = select("#chat-box");
+        const chatCTA = select("#chat-cta");
+        const chatClose = select("#chat-close");
+        const parent = select("#reviewer-box");
+        var text = '';
+        var classes = '';
+
+        if (condition) {
+            text = `
+                <div class="chat-profile-img">
+                    <img src="/images/avatars/${reviewer.pfp}" alt="img">
+                </div>
+                <div class="chat-profile-text">
+                    <h1>${reviewer.fullname}</h1>
+                    <p>${reviewer.email}</p>
+                </div>
+                <div class="profile-row">
+                    <button data-close>close</button>
+                    <a href="">View profile</a>
+                </div>
+            `;
+            classes = 'chat-profile-cont';
+        } else {
+            text = `
+                <div class="pend"></div>
+                <div class="pend"></div>
+                <div class="pend"></div>
+            `;
+            classes = 'pending-icon';
+        }
+
+        Methods.insertToDOM({
+            type: 'div',
+            parent,
+            text,
+            classes,
+            attributes: [['delete', '']]
+        });
+
+        const isOwnTask = user.id == owner.id;
+        const isReviewer = user.id == task.reviewer_id;
+        const isNotStudent = user.role != "student;"
+
+        if (!condition) {
+            //Hide chatbox if task doesnt have reviewer
+            chatBox.classList.add("hidden");
+
+            if (isOwnTask) {
+                chatCTA.classList.add("hidden");
+                chatClose.classList.remove("hidden");
+            } else if (isNotStudent) chatCTA.classList.remove("hidden");
+        } else {
+            if (isReviewer || isOwnTask) {
+                chatBox.classList.remove("hidden");
+            } else if (isNotStudent) {
+                chatBox.classList.add("hidden");
+                chatCTA.classList.add("hidden");
+                chatClose.classList.remove("hidden");
+            }
+
+            const formattedDate = task.created;
+            const parsedDate = new Date(formattedDate);
+            parsedDate.setMonth(parsedDate.getMonth() + 6);
+
+            deadlne.innerHTML = Methods.formatDate(parsedDate);
+            deadlne.setAttribute("data-task-inserted", "");
+        }
+    }
+
+    static showActivities(data = {}) {
+        const { activities, allUsers } = data;
+        const messageBox = select("#message-box");
+
+        selectAllWith(messageBox, '[data-delete]')?.forEach(elem => elem.remove());
+
+        activities.forEach(activity => {
+            const user_info = allUsers.find(user => user.id == activity.user_id);
+            const message = {
+                name: user_info.fullname,
+                pfp: user_info.pfp,
+                type: activity.type,
+                title: activity.title,
+                content: activity.content,
+                created: activity.created
+            }
+            CommonSetup.attachActivity(message);
+        })
+
+        messageBox.scrollTop = messageBox.scrollHeight;
+    }
+
+    static attachActivity(message = {}) {
+        const { type, content, name, title, created, pfp, get } = message;
+        const messageBox = select("#message-box");
+
+        if (!type) return console.warn("No message type");
+
+        const filename = content.split(".").slice(0, -1).join(".");
+        const ext = content.split(".").pop();
+        const html = {
+            file: `
+                <a href="/get-pdf/${content}" target="_blank" class="attachment">
+                    <div class="attachment-icon">
+                        <img src="/images/icons/file-regular.png" alt="icon">
+                    </div>
+                    <div class="attachment-text">
+                        <div class="attachment-name">
+                            <p class="attachment-name-para">${filename}</p>
+                            <p class="no-cap">.${ext}</p>
+                        </div>
+                        <div class="attachment-info">
+                            <p class="sub">0.00 MB</p>
+                            <span class="glow view"></span>
+                            <span class="glow">Click to view</span>
+                        </div>
+                    </div>
+                </a>
+            `,
+            text: `
+                <div class="message-body-text">
+                    <p>${Methods.sentenceCase(content)}</p>
+                </div>
+            `,
+            head: get ? '' : `
+                <div class="pfp-img">
+                    <img src="/images/avatars/${pfp}" alt="pfp">
+                    <div class="pfp-text">
+                        <p>${name}</p>
+                        <span>${title}</span>
+                    </div>
+                </div>
+                <div class="message-time">
+                    <span>${created}</span>
+                </div>
+            `
+        }
+
+        const parent = Methods.insertToDOM({
+            type: 'div',
+            classes: 'message-cont',
+            attributes: [['delete', '']]
+        })
+
+        const head = Methods.insertToDOM({
+            type: 'div',
+            parent,
+            text: html.head,
+            classes: 'message-head'
+        })
+
+        const body = Methods.insertToDOM({
+            type: 'div',
+            parent,
+            text: html[type],
+            classes: 'message-body'
+        })
+
+        if (get) {
+            if (get == 'head') return head;
+            if (get == 'body') return body;
+        } else messageBox.append(parent);
+    }
+
+    static showAttachments(params = {}) {
+        const { attachments } = params;
+        const attachmentBox = select("#attachments-box");
+
+        select("[data-task-attach_length]").innerHTML = attachments.length;
+        selectAllWith(attachmentBox, '[data-delete]')?.forEach(elem => elem.remove());
+
+        attachments.forEach(attach => {
+            attach.type = 'file';
+            attach.get = 'body';
+            const attachment = CommonSetup.attachActivity(attach);
+            attachment.setAttribute("data-delete", '');
+            attachmentBox.append(attachment)
+        })
+    }
+
+    static clearTriggered() {
+        const chatBox = select("#chat-box").classList.add("hidden");
+        const chatCTA = select("#chat-cta").classList.add("hidden");
+        const chatClose = select("#chat-close").classList.add("hidden");
+
+        selectAll("[data-task-inserted]").forEach(elem => {
+            elem.innerHTML = '-';
+            elem.removeAttribute('data-task-inserted');
+        });
+
+        selectAll('[data-delete]').forEach(elem => elem.remove());
+
+        select("[data-accept]").removeAttribute("data-identifier");
+        select("[data-accept]").removeEventListener("click", CommonSetup.acceptProposal);
     }
 
     static triggerOverlay(trigger) {
@@ -403,7 +710,59 @@ class CommonSetup {
             .to(overlay, { opacity: 0 })
             .call(() => {
                 overlay.forEach(elem => elem.removeAttribute("data-triggered"));
+                CommonSetup.clearTriggered();
             })
+    }
+
+    static async acceptProposal() {
+        const button = this;
+        const id = button.dataset.identifier;
+
+        try {
+            CommonSetup.attachSpinner({ elem: button });
+
+            const response = await fetch('/accept-task', {
+                method: 'POST',
+                body: JSON.stringify({ id }),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            };
+
+            const data = await response.json();
+
+            new Alert(data);
+            CommonSetup.detachSpinner({ elem: button });
+
+            CommonSetup.refreshProposal(id);
+        } catch (error) {
+            new Alert({
+                message: "Couldn't accept proposal, please try again",
+                type: 'error'
+            });
+            CommonSetup.detachSpinner({ elem: button });
+            console.error('Fetch error:', error.message);
+        }
+    }
+
+    static refreshProposal(id) {
+        if (!id) console.warn("No identifier for proposal refresh");
+
+        const overlay = select('#task');
+        const children = overlay.children;
+        const tl = gsap.timeline();
+
+        tl
+            .to(children, { opacity: 0 })
+            .call(() => {
+                CommonSetup.clearTriggered();
+                CommonSetup.handleTaskTrigger(id);
+            })
+            .to(children, { opacity: 1, stagger: 0.2, delay: 0.5 })
     }
 
     //Attach spinner to elements
@@ -476,8 +835,45 @@ class CommonSetup {
         // }
     }
 
+    static handleChatFiles(event) {
+        const input = event.target;
+        const file = input.files[0];
+        const dont_preview = true;
+        const url = '/chat-upload';
+        const id = input.dataset.identifier;
+
+        CommonSetup.uploadFile({ file, input, dont_preview, url, id, onComplete: () => CommonSetup.refreshProposal(id) });
+    }
+
+    static async refreshActivities(id = null) {
+        if (!id) {
+            new Alert({ message: "Missing identifier to refresh activity, please reload the page and try again", type: 'error' });
+            return;
+        }
+
+        try {
+            const initTasks = new Items({ table: 'tasks', id })
+            const [task] = await initTasks.find();
+
+            const initActivities = new Items({ table: 'activities', task_id: task.id })
+            const activities = await initActivities.find();
+
+            const initAttachments = new Items({ table: 'activities', task_id: task.id, type: 'file' })
+            const attachments = await initAttachments.find();
+
+            const initAllUsers = new Items({ custom: `SELECT * FROM users WHERE id IN (SELECT user_id FROM activities WHERE task_id = ${task.id})` })
+            const allUsers = await initAllUsers.find();
+
+            CommonSetup.showActivities({ activities, allUsers });
+            CommonSetup.showAttachments({ attachments });
+        } catch (error) {
+            console.error('Error in refreshActivities:', error);
+            new Alert({ message: "Error updating activity, please try again", type: 'error' });
+        }
+    }
+
     static uploadFile(params = {}) {
-        const { file, input } = params;
+        const { file, input, dont_preview, url, id, onComplete } = params;
         const uploadBox = select("#upload-box");
 
         if (!file || !input) {
@@ -495,6 +891,7 @@ class CommonSetup {
 
         const formData = new FormData();
         formData.append('pdfFile', file);
+        if (id) formData.append('task_id', id);
 
         const xhr = new XMLHttpRequest();
 
@@ -509,7 +906,9 @@ class CommonSetup {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     const data = JSON.parse(xhr.responseText)
-                    displayPreview(data.filename);
+
+                    if (!dont_preview) displayPreview(data.filename);
+
                     new Alert({ message: 'File upload complete', type: 'success' });
 
                     gsap.to(upload, {
@@ -521,6 +920,8 @@ class CommonSetup {
                             CommonSetup.resetFileInput(input, upload);
                         }
                     });
+
+                    if (onComplete) onComplete();
                 } else if (xhr.status === 0) {
                     console.log('Upload cancelled by user');
                 } else {
@@ -561,7 +962,7 @@ class CommonSetup {
             })
         }
 
-        xhr.open('POST', '/upload', true);
+        xhr.open('POST', url || '/upload', true);
         xhr.send(formData);
     }
 
@@ -608,11 +1009,106 @@ class CommonSetup {
             input.value = '';
         }
 
-        upload.remove();
+        upload?.remove();
 
         if (parent) {
             selectWith(parent, 'iframe')?.remove();
             parent.classList.remove("none");
+        }
+    }
+
+    //Handle form submissions
+    initializeForms() {
+        selectAll("form").forEach(form => form.addEventListener("submit", CommonSetup.handleFormSubmission))
+    }
+
+    static async handleFormSubmission(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        if (!(form instanceof HTMLElement)) return new Alert({ message: "Couldn't find form data for submission", type: 'warning' });
+
+        var button = selectWith(form, 'button[type="submit"]');
+        if (!button) button = select(`button[type="submit"][form=${form.getAttribute("id")}]`);
+
+        CommonSetup.attachSpinner({ elem: button });
+
+        const formData = new FormData(form);
+        const url = form.action;
+
+        formData.delete('pdfFile');
+
+        if (!url) return location.reload();
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                body: Methods.formDataToJson(formData),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.invalidKeys) {
+                //If there are invalid inputs display messages
+                Methods.assignErrorMsgs(data.invalidKeys);
+                CommonSetup.detachSpinner({ elem: button });
+            } else {
+                if (response.ok) {
+                    if (data?.url) return window.location.href = data?.url || "/";
+                    else {
+                        //If request successful, show alert
+                        form?.reset();
+                        new Alert(data);
+
+                        if (data?.clean_up) {
+                            if (data.clean_up == 'message') {
+                               CommonSetup.refreshProposal(data.task_id); 
+                            }
+                        }
+
+                        const parent = select('label[data-preview="pdfFile"]');
+                        CommonSetup.resetFileInput(null, null, parent)
+                        CommonSetup.detachSpinner({ elem: button });
+                    }
+                } else {
+                    //If there was a problem in the backend, display alert
+                    new Alert(data);
+                    CommonSetup.detachSpinner({ elem: button });
+                }
+            };
+        } catch (error) {
+            new Alert({ message: 'Error submitting the form, please try again', type: 'error' });
+            CommonSetup.detachSpinner({ elem: button });
+            console.error('Error:', error);
+        }
+    }
+}
+
+class Items {
+    constructor(params = {}) {
+        Object.assign(this, params);
+    }
+
+    async find() {
+        try {
+            const response = await fetch('/get-items', {
+                method: 'POST',
+                body: JSON.stringify(this),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Fetch error:', error.message);
         }
     }
 }
@@ -674,3 +1170,4 @@ class Alert {
 }
 
 new CommonSetup();
+// CommonSetup.handleTaskTrigger(2);

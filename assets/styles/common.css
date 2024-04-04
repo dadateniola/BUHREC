@@ -82,6 +82,14 @@ a {
     opacity: 0;
 } */
 
+button {
+    border: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
 .img-here {
     overflow: hidden;
 }
@@ -232,6 +240,10 @@ button {
     border-radius: 10px;
     text-transform: capitalize;
     font-weight: 600;
+    cursor: pointer;
+}
+
+[data-trigger] {
     cursor: pointer;
 }
 
@@ -532,6 +544,18 @@ section {
 
 .section-table::-webkit-scrollbar {
     display: none;
+}
+
+.section-empty {
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(var(--black), 0.2);
+}
+
+.section-empty p {
+    text-align: center;
+    font-size: var(--small-text);
+    color: var(--sub);
 }
 
 table {
@@ -921,6 +945,11 @@ p[data-task-description] {
 .atachments {
     display: flex;
     gap: 20px;
+    overflow-x: scroll;
+}
+
+.atachments::-webkit-scrollbar {
+    display: none;
 }
 
 .attachment {
@@ -969,6 +998,7 @@ p[data-task-description] {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: none !important;
 }
 
 .attachment-text span {
@@ -986,7 +1016,7 @@ p[data-task-description] {
     gap: 10px;
 }
 
-span.glow {
+.glow {
     color: var(--malachite);
 }
 
@@ -1012,10 +1042,10 @@ span.glow {
 
 .chat-profile-box {
     width: 100%;
+    height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
     background-color: rgba(var(--black), 0.2);
     border-radius: 15px;
 }
@@ -1031,6 +1061,10 @@ span.glow {
     display: flex;
     flex-direction: column;
     gap: 4px;
+}
+
+.chat-profile-text>* {
+    text-align: center;
 }
 
 .chat-profile-img img {
@@ -1116,6 +1150,12 @@ span.glow {
     gap: 10px;
 }
 
+#form-chat-message {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
 .task-chat-box img {
     width: 18px;
     height: 18px;
@@ -1134,6 +1174,16 @@ span.glow {
     background-color: transparent;
     border-radius: 0;
     border: none;
+}
+
+.task-chat-cta {
+    display: flex;
+    gap: 20px;
+} 
+
+.task-chat-cta button {
+    flex: 1;
+    font-size: var(--small-text);
 }
 
 .task-chat-box button,
@@ -1201,7 +1251,7 @@ span.glow {
 }
 
 .message-body-text {
-    width: 85%;
+    max-width: 85%;
     padding: 15px;
     background-color: var(--wisteria);
     border-radius: 10px;

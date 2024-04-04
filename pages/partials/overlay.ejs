@@ -5,18 +5,21 @@
     <form action="/add-task" method="post" class="form-grid" id="pdf-form">
         <div class="form-group">
             <label for="task_name">task name</label>
-            <input type="email" name="task_name" id="task_name" placeholder="Enter task name">
+            <input type="text" name="task_name" id="task_name" placeholder="Enter task name">
         </div>
         <div class="form-group">
             <label for="course">course</label>
             <select name="course" id="course">
-                <option value="" selected disabled>Select the course</option>
+                <option value="" selected>Select the course</option>
+                <% data.courses.forEach(course=> { %>
+                    <option value=<%=course %>><%= course.split("_").join(" ") %></option>
+                <% }) %>
             </select>
         </div>
-        <div class="form-group">
-            <label for="description">description</label>
-            <textarea name="description" id="description" cols="30" rows="10"
-                placeholder="Enter task description"></textarea>
+        <div class=" form-group">
+                            <label for="description">description</label>
+                            <textarea name="description" id="description" cols="30" rows="10"
+                                placeholder="Enter task description"></textarea>
         </div>
         <div class="form-group">
             <label for="pdfFile">upload document</label>
@@ -41,160 +44,61 @@
 <div id="task">
     <div class="task-content">
         <div class="content-head">
-            <h1>online library managememt system (OLMS)</h1>
+            <h1 data-task-task_name>-</h1>
         </div>
         <div class="task-info">
-            <div class="task-info-text">
+            <div class="task-info-text" id="task-owner">
                 <h1>owner</h1>
-                <div class="pfp-img">
-                    <img src="/images/avatars/avatar-1.png" alt="pfp">
-                    <div class="pfp-text">
-                        <p>ezenagu divine</p>
-                        <span>divine@gmail.com</span>
-                    </div>
-                </div>
             </div>
             <div class="task-info-text">
                 <h1>course</h1>
-                <p>software engineering</p>
+                <p data-task-course>-</p>
             </div>
             <div class="task-info-text">
                 <h1>start date</h1>
-                <p>10 jun 2023</p>
+                <p data-task-created>-</p>
             </div>
             <div class="task-info-text">
                 <h1>deadline</h1>
-                <p>1 jan 2024</p>
+                <p data-task-deadline>-</p>
             </div>
         </div>
         <div class="task-info-text">
             <h1>description</h1>
-            <p data-task-description>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat tenetur, odit
-                voluptatibus adipisci sit
-                maiores earum odio sunt illo nam.</p>
+            <p data-task-description>-</p>
         </div>
         <div class="task-info-text">
-            <h1>attachments (-)</h1>
-            <div class="atachments">
-                <div class="attachment">
-                    <div class="attachment-icon">
-                        <img src="/images/icons/file-regular.png" alt="icon">
-                    </div>
-                    <div class="attachment-text">
-                        <div class="attachment-name">
-                            <p class="attachment-name-para">Project Handbook</p>
-                            <p class="no-cap">.pdf</p>
-                        </div>
-                        <div class="attachment-info">
-                            <p class="sub">5.23 MB</p>
-                            <span class="glow view"></span>
-                            <span class="glow">Click to view</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="attachment">
-                    <div class="attachment-icon">
-                        <img src="/images/icons/file-regular.png" alt="icon">
-                    </div>
-                    <div class="attachment-text">
-                        <div class="attachment-name">
-                            <p class="attachment-name-para">Project Handbook</p>
-                            <p class="no-cap">.pdf</p>
-                        </div>
-                        <div class="attachment-info">
-                            <p class="sub">5.23 MB</p>
-                            <span class="glow view"></span>
-                            <span class="glow">Click to view</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h1>attachments ( <span data-task-attach_length>-</span> )</h1>
+            <div class="atachments" id="attachments-box"></div>
         </div>
     </div>
     <div class="task-chat">
-        <div class="chat-profile-box">
-            <div class="chat-profile-cont">
-                <div class="chat-profile-img">
-                    <img src="/images/avatars/avatar-9.png" alt="img">
-                </div>
-                <div class="chat-profile-text">
-                    <h1>busari william</h1>
-                    <p>busari@gmail.com</p>
-                </div>
-                <div class="profile-row">
-                    <button data-close>close</button>
-                    <a href="">View profile</a>
-                </div>
-            </div>
-        </div>
+        <div class="chat-profile-box" id="reviewer-box"></div>
         <div class="activity">
             <div class="line-hr"></div>
             <p>activity</p>
             <div class="line-hr"></div>
         </div>
-        <div class="task-message-box">
-            <div class="message-cont">
-                <div class="message-head">
-                    <div class="pfp-img">
-                        <img src="/images/avatars/avatar-1.png" alt="pfp">
-                        <div class="pfp-text">
-                            <p>ezenagu divine</p>
-                            <span>Made a comment</span>
-                        </div>
-                    </div>
-                    <div class="message-time">
-                        <span>0:00 AM</span>
-                    </div>
-                </div>
-                <div class="message-body">
-                    <div class="message-body-text">
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta ullam veniam velit inventore modi earum cum laudantium facilis, tempore officia animi, aut ratione sed iste necessitatibus eos accusantium, atque fugit.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="message-cont">
-                <div class="message-head">
-                    <div class="pfp-img">
-                        <img src="/images/avatars/avatar-9.png" alt="pfp">
-                        <div class="pfp-text">
-                            <p>busari william</p>
-                            <span>Attached a document</span>
-                        </div>
-                    </div>
-                    <div class="message-time">
-                        <span>0:00 AM</span>
-                    </div>
-                </div>
-                <div class="message-body">
-                    <div class="attachment">
-                        <div class="attachment-icon">
-                            <img src="/images/icons/file-regular.png" alt="icon">
-                        </div>
-                        <div class="attachment-text">
-                            <div class="attachment-name">
-                                <p class="attachment-name-para">Project Handbook</p>
-                                <p class="no-cap">.pdf</p>
-                            </div>
-                            <div class="attachment-info">
-                                <p class="sub">5.23 MB</p>
-                                <span class="glow view"></span>
-                                <span class="glow">Click to view</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="task-chat-box">
+        <div class="task-message-box" id="message-box"></div>
+        <div class="task-chat-box hidden" id="chat-box">
             <label for="chatFiles" class="no-star">
                 <img src="/images/icons/clip.png" alt="icon">
             </label>
             <input type="file" name="chatFiles" id="chatFiles" accept=".pdf">
-            <textarea name="message" id="message" rows="1" placeholder="Write a message"></textarea>
-            <!-- <input type="text" name="message" id="message" placeholder="Write a message"> -->
-            <button type="submit">
-                <img src="/images/icons/plane.png" alt="icon">
-            </button>
+            <form action="/chat-message" method="post" id="form-chat-message">
+                <textarea name="message" id="message" rows="1" placeholder="Write a message"></textarea>
+                <input type="hidden" name="task_id" id="task_id">
+                <button type="submit">
+                    <img src="/images/icons/plane.png" alt="icon">
+                </button>
+            </form>
+        </div>
+        <div class="task-chat-cta hidden" id="chat-cta">
+            <button data-close>close</button>
+            <button data-accept>accept proposal</button>
+        </div>
+        <div class="task-chat-cta hidden" id="chat-close">
+            <button data-close>close</button>
         </div>
     </div>
 </div>

@@ -1,8 +1,10 @@
 const fs = require('fs').promises;
 const path = require('path');
 const Methods = require("../Models/Methods");
+const Model = require("../Models/Model");
 const User = require("../Models/User");
-const UserRole = require("../Models/UserRole");
+const Task = require("../Models/Task");
+const Activity = require("../Models/Activity");
 
 const DEFAULT_USER_ID = '1';
 
@@ -16,6 +18,15 @@ const unauthorized_alert = {
     type: 'warning'
 }
 
+const courses = [
+    'Software_Engineering',
+    'Computer_Science',
+    'Information_Technology',
+    'Civil_Engineering',
+    'Mechanical_Engineering',
+    'Electrical_Engineering'
+];
+
 const tempFolder = path.resolve(__dirname, '..', 'temp');
 const uploadsFolder = path.resolve(__dirname, '..', 'uploads', 'resources');
 
@@ -23,8 +34,26 @@ function isObject(value) {
     return (typeof value === 'object' && value !== null && !Array.isArray(value));
 }
 
+async function get_dashboard_info(params = {}) {
+    const { uid, user } = params;
+    const tasks = [];
+
+    if (!uid) return [];
+
+    const recentTasks = await Task.find(['user_id', uid]);
+    const currentTasks = await Task.find(['reviewer_id', uid]);
+    const openTasks = await Task.customSql(`SELECT * FROM tasks WHERE status = 'pending' AND user_id != ${uid}`);
+
+    if (user.role != 'reviewer') tasks.push({ title: 'recent tasks', data: Methods.formatAllDates(recentTasks) })
+
+    if (user.role != "student") tasks.push({ title: 'current tasks', data: Methods.formatAllDates(currentTasks) });
+    if (user.role != "student") tasks.push({ title: 'open tasks', data: Methods.formatAllDates(openTasks) });
+
+    return tasks;
+}
+
 const routeSetup = async (req, res, next) => {
-    // req.session.uid = DEFAULT_USER_ID;
+    req.session.uid = DEFAULT_USER_ID;
     const { alert, uid } = req.session;
 
     if (!uid) {
@@ -37,6 +66,7 @@ const routeSetup = async (req, res, next) => {
 
     try {
         const [user] = await User.find(['id', uid]);
+        const allUsers = await User.find();
 
         // if(!user) {
         //     return res.redirect("/logout");
@@ -47,6 +77,9 @@ const routeSetup = async (req, res, next) => {
         const previewRoute = (await Methods.checkFileExistence({ filePath })) ? `/get-pdf/${filename}/preview` : null;
 
         res.locals.data = {
+            user,
+            allUsers,
+            courses,
             previewRoute,
         }
 
@@ -80,17 +113,6 @@ const showSignUpPage = (req, res) => {
             active: 'create-an-account',
             completed: []
         }
-
-        // req.session.signup = {
-        //     active: 'additional-information',
-        //     completed: ['create-an-account', 'select-a-role']
-        // }
-        // req.session.info = {
-        //     email: 'emmatenny2004@gmail.com',
-        //     password: 'pass',
-        //     fullname: 'dada teniola',
-        //     role: 'student'
-        // }
     }
 
     const active = req.session.signup.active;
@@ -145,8 +167,13 @@ const showLoginPage = (req, res) => {
     res.render("login", { sidebar, active, completed })
 }
 
-const showDashboard = (req, res) => {
-    res.render("dashboard");
+const showDashboard = async (req, res) => {
+    const uid = req.session.uid;
+    const [user] = await User.find(['id', uid]);
+
+    const allTasks = await get_dashboard_info({ uid, user });
+
+    res.render("dashboard", { allTasks });
 }
 
 const showTasksPage = (req, res) => {
@@ -192,7 +219,7 @@ const handleLogin = async (req, res) => {
 
             // Clear session data
             delete req.session.login;
-        
+
             res.status(200).send({
                 next,
                 completed,
@@ -310,6 +337,7 @@ const handlePayment = async (req, res) => {
 
     try {
         // Create user account
+        req.session.info.pfp = await Methods.getPFP();
         const user = new User(req.session.info);
         const result = await user.add();
 
@@ -323,7 +351,7 @@ const handlePayment = async (req, res) => {
 
         // Update session information
         const next = 'verification-&-validation';
-        
+
         req.session.signup.completed.push(req.session.signup.active);
         req.session.signup.active = next;
 
@@ -347,7 +375,6 @@ const handlePayment = async (req, res) => {
         res.status(500).send({ message: 'Internal server error, please try again', type: 'error' });
     }
 }
-
 
 const handleUpload = async (req, res) => {
     if (!req?.files) return (req.aborted) ? console.log('Request aborted but still received') : console.log('Files not received');
@@ -373,6 +400,198 @@ const handleUpload = async (req, res) => {
     } catch (error) {
         console.error('Error moving file:', error);
         res.status(500).send({ message: 'Internal Server Error', type: 'error' });
+    }
+}
+
+const handleChatUpload = async (req, res) => {
+    try {
+        const { task_id } = req.body;
+        const { pdfFile } = req.files;
+        const userId = req.session?.uid;
+
+        if (!pdfFile || pdfFile.mimetype !== 'application/pdf') {
+            return res.status(400).send({ message: 'You can only upload a valid PDF file', type: 'error' });
+        }
+
+        if (!userId) return res.status(401).send({ message: 'User authentication required, please login', type: 'warning' });
+
+        const filename = Methods.uniqueID() + ".pdf";
+        const activity_data = {
+            task_id,
+            user_id: userId,
+            type: "file",
+            title: "Attached a document",
+            content: filename,
+        }
+
+        const activity = new Activity(activity_data);
+        const activity_result = await activity.add();
+
+        if (!activity_result) return res.status(500).send({ message: "Activity couldn't be added", type: "error" });
+
+        // Create the "temp" folder if it doesn't exist
+        await fs.mkdir(uploadsFolder, { recursive: true });
+
+        await pdfFile.mv(path.join(uploadsFolder, filename));
+
+        res.status(200).send({
+            message: "Activity successfully added",
+            type: "success",
+        });
+    } catch (error) {
+        console.error('Error moving file:', error);
+        res.status(500).send({ message: 'Internal Server Error', type: 'error' });
+    }
+}
+
+const handleChatMessage = async (req, res) => {
+    try {
+        const { task_id, message } = req.body;
+        const userId = req.session?.uid;
+
+        if (!userId) return res.status(401).send({ message: 'User authentication required, please login', type: 'warning' });
+
+        const activity_data = {
+            task_id,
+            user_id: userId,
+            type: "text",
+            title: "Made a comment",
+            content: message,
+        }
+
+        const activity = new Activity(activity_data);
+        const activity_result = await activity.add();
+
+        if (!activity_result) return res.status(500).send({ message: "Activity couldn't be added", type: "error" });
+
+        res.status(200).send({
+            message: "Activity successfully added",
+            type: "success",
+            clean_up: 'message',
+            task_id
+        });
+    } catch (error) {
+        console.error('Error adding message:', error);
+        res.status(500).send({ message: 'Internal Server Error', type: 'error' });
+    }   
+}
+
+const handleAddingTasks = async (req, res) => {
+    try {
+        const data = req.body;
+        // Validate user information
+        const methods = new Methods(data);
+        const { invalidKeys } = methods.validateData();
+
+        // Check if there is invalid data to send back to the user
+        if (Object.keys(invalidKeys).length > 0) {
+            return res.send({ invalidKeys });
+        }
+
+        //Check if user exists
+        const userId = req.session.uid;
+
+        if (!userId) return res.status(401).send({ message: 'User authentication required, please login', type: 'warning' });
+
+        //Check if users file exists
+        const filePath = path.join(tempFolder, Methods.tempFilename(userId));
+
+        if (!(await Methods.checkFileExistence({ filePath }))) {
+            return res.status(400).send({
+                message: "No file found. Please upload a file before submitting the form",
+                type: 'warning'
+            });
+        }
+
+        const filename = Methods.uniqueID() + ".pdf";
+        const destinationPath = path.join(uploadsFolder, filename);
+
+        //Add the task to database
+        data.user_id = userId;
+        data.course = data.course.split("_").join(" ");
+
+        const task = new Task(data);
+        const task_result = await task.add();
+
+        if (!task_result) return res.status(500).send({ message: "Unable to process request", type: "error" });
+
+        //Create activity data
+        const activity_data = {
+            task_id: task.id,
+            user_id: userId,
+            type: 'file',
+            title: 'Attached a document',
+            content: filename
+        }
+
+        const activity = new Activity(activity_data);
+        const activity_result = await activity.add();
+
+        if (!activity_result) return res.status(500).send({ message: "Activity couldn't be added", type: "error" });
+
+        //Move file to permanent spot
+        await fs.rename(filePath, destinationPath);
+
+        res.status(200).send({
+            message: "Proposal successfully added",
+            type: "success",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            message: "Internal server error, please try again",
+            type: "error"
+        });
+    }
+}
+
+const handleAcceptingTasks = async (req, res) => {
+    try {
+        const { id } = req.body;
+        const { uid } = req.session;
+        const data = {
+            id,
+            reviewer_id: uid,
+            status: 'in progress'
+        }
+
+        const task = new Task(data);
+        await task.update();
+
+        res.status(200).send({
+            message: "Proposal accepted successfully",
+            type: "success",
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            message: "Internal server error, please try again",
+            type: "error"
+        });
+    }
+}
+
+const getItems = async (req, res) => {
+    const { table, custom, columns, userId } = req.body;
+
+    if (userId) {
+        req.body.id = req.session.uid;
+        delete req.body.userId;
+    }
+
+    if (custom) {
+        const items = await Model.customSql(custom);
+
+        res.json(Methods.formatAllDates(items));
+    } else {
+        delete req.body.table;
+        delete req.body.columns;
+
+        const conditions = Object.entries(req.body);
+
+        const items = await Model.find(conditions, table, columns);
+
+        res.json(Methods.formatAllDates(items));
     }
 }
 
@@ -408,8 +627,9 @@ const getPDF = async (req, res) => {
 
 module.exports = {
     routeSetup,
-    showLandingPage,
+    showLandingPage, handleAddingTasks, getItems,
     showSignUpPage, showLoginPage, getForms, handleLogin,
     handleSignUp, handleRole, handlePayment, showDashboard,
-    showTasksPage, handleUpload, getPDF, handleExtra
+    showTasksPage, handleUpload, getPDF, handleExtra,
+    handleAcceptingTasks, handleChatUpload, handleChatMessage
 }

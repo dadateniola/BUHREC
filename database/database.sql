@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     `role` ENUM('student', 'researcher', 'reviewer') NOT NULL,
     `degree` ENUM('msc', 'bsc', 'phd'),
     `course` VARCHAR(255) NOT NULL,
+    `pfp` VARCHAR(255) DEFAULT 'avatar-1.png',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -14,8 +15,12 @@ CREATE TABLE IF NOT EXISTS users (
 -- Create the 'tasks' table
 CREATE TABLE IF NOT EXISTS tasks (
     `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `task_name` VARCHAR(255) NOT NULL,
+    `course` VARCHAR(255) NOT NULL,
+    `description` VARCHAR(255) NOT NULL,
     `user_id` INT UNSIGNED NOT NULL,
     `reviewer_id` INT UNSIGNED,
+    `status` ENUM('pending', 'in progress', 'complete') NOT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES users(`id`) ON DELETE CASCADE,
@@ -35,3 +40,11 @@ CREATE TABLE IF NOT EXISTS activities (
     FOREIGN KEY (`task_id`) REFERENCES tasks(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES users(`id`) ON DELETE CASCADE
 );
+
+
+
+INSERT INTO users (`email`, `password`, `fullname`, `role`, `course`, `pfp`)
+VALUES 
+    ('student@example.com', 'pass', 'John Doe', 'student', 'Software Engineering', 'avatar-2.png'),
+    ('researcher@example.com', 'pass', 'Alice Smith', 'researcher', 'Computer Science', 'avatar-3.png'),
+    ('reviewer@example.com', 'pass', 'Bob Johnson', 'reviewer', 'Information Technology', 'avatar-4.png');
