@@ -669,6 +669,23 @@ const getPDF = async (req, res) => {
     }
 }
 
+const logout = (req, res) => {
+    // Destroy the user's session
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            res.status(500).send('Error logging out');
+        } else {
+            // Redirect the user to the login page or any other appropriate page
+            // req.session.alert = {
+            //     message: 'Logout successful',
+            //     type: 'success'
+            // }
+            return res.redirect("/");
+        }
+    });
+}
+
 module.exports = {
     routeSetup,
     showLandingPage, handleAddingTasks, getItems,
@@ -676,5 +693,5 @@ module.exports = {
     handleSignUp, handleRole, handlePayment, showDashboard,
     showTasksPage, handleUpload, getPDF, handleExtra,
     handleAcceptingTasks, handleChatUpload, handleChatMessage,
-    handleCertifyingTasks
+    handleCertifyingTasks, logout
 }

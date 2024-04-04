@@ -1,6 +1,6 @@
 const { Router } = require("express");
 
-const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard, showTasksPage, handleUpload, getPDF, routeSetup, handleExtra, showLandingPage, handleAddingTasks, getItems, handleAcceptingTasks, handleChatUpload, handleChatMessage, handleCertifyingTasks } = require("../controllers/mainControllers");
+const { showSignUpPage, showLoginPage, handleLogin, handleSignUp, getForms, handleRole, handlePayment, showDashboard, showTasksPage, handleUpload, getPDF, routeSetup, handleExtra, showLandingPage, handleAddingTasks, getItems, handleAcceptingTasks, handleChatUpload, handleChatMessage, handleCertifyingTasks, logout } = require("../controllers/mainControllers");
 
 const router = Router();
 
@@ -38,6 +38,8 @@ router.get('/', showLandingPage);
 router.get("/signup", showSignUpPage);
 
 router.get("/login", showLoginPage);
+
+router.get("/logout", logout)
 
 
 router.use(routeSetup);
