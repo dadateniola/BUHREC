@@ -39,8 +39,17 @@ router.get("/signup", showSignUpPage);
 
 router.get("/login", showLoginPage);
 
-router.get("/logout", logout)
+router.get("/logout", logout);
 
+router.get("/test", (req, res) => {
+    const data = {
+        owner: 'dada teniola',
+        task: 'online library managament system',
+        reviewer: 'ezenagu divine'
+    }
+
+    res.render('partials/template', data)
+})
 
 router.use(routeSetup);
 

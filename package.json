@@ -17,6 +17,7 @@
     "express-fileupload": "^1.4.3",
     "express-session": "^1.18.0",
     "mysql2": "^3.9.2",
-    "pluralize": "^8.0.0"
+    "pluralize": "^8.0.0",
+    "puppeteer": "^22.6.5"
   }
 }

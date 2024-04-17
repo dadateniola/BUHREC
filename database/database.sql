@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     `user_id` INT UNSIGNED NOT NULL,
     `reviewer_id` INT UNSIGNED,
     `status` ENUM('pending', 'in progress', 'complete') NOT NULL,
+    `certificate` VARCHAR(255) DEFAULT NULL,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES users(`id`) ON DELETE CASCADE,

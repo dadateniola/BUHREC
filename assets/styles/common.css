@@ -33,11 +33,10 @@
     --sidebar-padding: 30px;
     --input-padding: 15px;
 
-    --text: 0.88em;
-    --small-text: 0.8em;
+    --text: 0.9em;
+    --small-text: 0.87em;
     --tiny-text: 0.7em;
 }
-
 
 body {
     width: 100%;

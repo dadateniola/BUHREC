@@ -1,5 +1,8 @@
-const fs = require('fs').promises;
+const ejs = require('ejs');
 const path = require('path');
+const puppeteer = require('puppeteer');
+
+const fs = require('fs').promises;
 const Methods = require("../Models/Methods");
 const Model = require("../Models/Model");
 const User = require("../Models/User");
@@ -29,6 +32,7 @@ const courses = [
 
 const tempFolder = path.resolve(__dirname, '..', 'temp');
 const uploadsFolder = path.resolve(__dirname, '..', 'uploads', 'resources');
+const certificatesFolder = path.resolve(__dirname, '..', 'uploads', 'certificates');
 
 function isObject(value) {
     return (typeof value === 'object' && value !== null && !Array.isArray(value));
@@ -67,8 +71,30 @@ async function get_tasks_info(params = {}) {
     return tasks;
 }
 
+async function generate_certificate(data, options = {}) {
+    const filePath = path.resolve(__dirname, '..', 'pages', 'partials', 'template.ejs');
+    const certificate = await fs.readFile(filePath, 'utf-8');
+    
+    const filename = Methods.uniqueID() + ".pdf";
+    const compiledTemplate = ejs.render(certificate, data);
+    const outputPath = path.resolve(certificatesFolder, filename);
+    
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    // Set the content of the page to the HTML content
+    await page.setContent(compiledTemplate);
+
+    // Generate PDF
+    await page.pdf({ path: outputPath, format: options?.format || 'A4' });
+
+    await browser.close();
+
+    return filename;
+}
+
 const routeSetup = async (req, res, next) => {
-    // req.session.uid = DEFAULT_USER_ID;
+    req.session.uid = DEFAULT_USER_ID;
     const { alert, uid } = req.session;
 
     if (!uid) {
@@ -594,13 +620,27 @@ const handleAcceptingTasks = async (req, res) => {
 const handleCertifyingTasks = async (req, res) => {
     try {
         const { id } = req.body;
-        const data = {
-            id,
-            status: 'complete'
+
+        const [task] = await Task.find(['id', id]);
+        const [owner] = await User.find(['id', task?.user_id]);
+        const [reviewer] = await User.find(['id', task?.reviewer_id]);
+
+        const certificate_data = {
+            owner: owner.fullname,
+            reviewer: reviewer.fullname,
+            task: task.task_name
         }
 
-        const task = new Task(data);
-        await task.update();
+        const certificate = await generate_certificate(certificate_data);
+
+        const data = {
+            id,
+            status: 'complete',
+            certificate
+        }
+
+        const update_task = new Task(data);
+        await update_task.update();
 
         res.status(200).send({
             message: "Proposal certified successfully",
@@ -647,6 +687,8 @@ const getPDF = async (req, res) => {
 
         const halfPath = (type == 'preview') ?
             path.resolve('temp', file) :
+            (type == 'certificate') ?
+            path.resolve('uploads', 'certificates', file) :
             path.resolve('uploads', 'resources', file);
 
         const filePath = path.resolve(__dirname, '..', halfPath);

@@ -434,6 +434,7 @@ class CommonSetup {
 
             task.parent = select("#task");
             task.attach_length = attachments.length;
+            task.reviewer = task.reviewer_id ? reviewer.fullname : '';
             CommonSetup.addData(task);
 
             CommonSetup.showOwner({ owner, user });
@@ -443,6 +444,8 @@ class CommonSetup {
             CommonSetup.isComplete(task.status == 'complete');
 
             CommonSetup.initializeTriggers();
+            console.log(task.certificate);
+            select("[data-task-view-certificate]").setAttribute("href", task.certificate ? `/get-pdf/${task.certificate}/certificate` : '');
         } catch (error) {
             console.error('Error in handleTaskTrigger:', error);
             new Alert({ message: "Error retrieving resource information, please try again", type: 'error' });
@@ -693,10 +696,11 @@ class CommonSetup {
     }
 
     static clearTriggered() {
-        const chatBox = select("#chat-box").classList.add("hidden");
-        const chatCTA = select("#chat-cta").classList.add("hidden");
-        const chatClose = select("#chat-close").classList.add("hidden");
-        const certify = select("#certify").classList.add("hidden");
+        select("#chat-box").classList.add("hidden");
+        select("#chat-cta").classList.add("hidden");
+        select("#chat-close").classList.add("hidden");
+        select("#certify").classList.add("hidden");
+        select("#certified").classList.add("hidden");
 
         selectAll("[data-task-inserted]").forEach(elem => {
             elem.innerHTML = '-';
