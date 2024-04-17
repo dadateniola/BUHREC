@@ -444,7 +444,6 @@ class CommonSetup {
             CommonSetup.isComplete(task.status == 'complete');
 
             CommonSetup.initializeTriggers();
-            console.log(task.certificate);
             select("[data-task-view-certificate]").setAttribute("href", task.certificate ? `/get-pdf/${task.certificate}/certificate` : '');
         } catch (error) {
             console.error('Error in handleTaskTrigger:', error);

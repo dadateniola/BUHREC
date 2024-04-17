@@ -16,19 +16,20 @@
     * {
         margin: 0;
         padding: 0;
-        color: white;
+        color: black;
         box-sizing: border-box;
 
-        font-family: "Inter", sans-serif;
-        font-weight: 400;
+        font-family: "Manrope", sans-serif;
+        font-weight: 600;
         text-align: center;
+        font-size: 20px;
     }
 
     :root {
         --errie-black: #171717;
         --light: #FFFFFF;
         --jet: #2C2C2C;
-        --wisteria: #D0AAE7;
+        --wisteria: #754791;
         --malachite: #4DE265;
         --ever-green: #567568;
     }
@@ -41,7 +42,8 @@
         align-items: center;
         flex-direction: column;
         gap: 20px;
-        background-color: var(--errie-black);
+        padding: 40px;
+        border: 10px solid var(--wisteria);
     }
 
     .content {
@@ -53,19 +55,26 @@
     .content-head h1 {
         color: var(--wisteria);
         text-transform: uppercase;
-        font-size: 40px;
+        font-size: 65px;
         font-weight: 800;
+        font-family: "Inter", sans-serif;
     }
 
     .heading {
-        font-size: 30px;
-        font-weight: 600;
+        font-size: 50px;
+        font-weight: 800;
     }
 
     img {
         width: 30%;
         height: 40%;
 
+    }
+
+    .reviewer,
+    .task {
+        text-transform: capitalize;
+        font-weight: 800;
     }
 
     .sign {
@@ -88,8 +97,8 @@
             <h1>buhrec</h1>
         </div>
         <h1 class="heading">Certificate of Completion</h1>
-        <p>This is to certify that <%= owner %> has successfully completed the project "<%= task %>".</p>
-        <p>Reviewed by: <%= reviewer %>
+        <p class="desc">This is to certify that <%= owner %> has successfully completed the project <span class="task">"<%= task %>"</span>.</p>
+        <p>Reviewed by: <span class="reviewer"><%= reviewer %></span>
         </p>
         <div class="sign">
             <i>Supervisor: Dr Maitanmi</i>

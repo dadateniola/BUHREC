@@ -86,7 +86,7 @@ async function generate_certificate(data, options = {}) {
     await page.setContent(compiledTemplate);
 
     // Generate PDF
-    await page.pdf({ path: outputPath, format: options?.format || 'A4' });
+    await page.pdf({ path: outputPath, format: options?.format || 'Ledger' });
 
     await browser.close();
 
@@ -737,3 +737,11 @@ module.exports = {
     handleAcceptingTasks, handleChatUpload, handleChatMessage,
     handleCertifyingTasks, logout
 }
+
+// generate_certificate({
+//     owner: 'dada teniola',
+//     reviewer: 'ezenagu divine',
+//     task: 'OLMS'
+// }, {
+//     format: 'Ledger'
+// })
