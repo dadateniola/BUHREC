@@ -8,6 +8,7 @@ const Model = require("../Models/Model");
 const User = require("../Models/User");
 const Task = require("../Models/Task");
 const Activity = require("../Models/Activity");
+const { log } = require('console');
 
 const DEFAULT_USER_ID = '2';
 
@@ -74,11 +75,11 @@ async function get_tasks_info(params = {}) {
 async function generate_certificate(data, options = {}) {
     const filePath = path.resolve(__dirname, '..', 'pages', 'partials', 'template.ejs');
     const certificate = await fs.readFile(filePath, 'utf-8');
-    
+
     const filename = Methods.uniqueID() + ".pdf";
     const compiledTemplate = ejs.render(certificate, data);
     const outputPath = path.resolve(certificatesFolder, filename);
-    
+
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
@@ -94,7 +95,7 @@ async function generate_certificate(data, options = {}) {
 }
 
 const routeSetup = async (req, res, next) => {
-    req.session.uid = DEFAULT_USER_ID;
+    // req.session.uid = DEFAULT_USER_ID;
     const { alert, uid } = req.session;
 
     if (!uid) {
@@ -229,10 +230,14 @@ const showTasksPage = async (req, res) => {
 const getForms = async (req, res) => {
     const { form } = req.body;
     const filePath = path.resolve(__dirname, '..', 'pages', 'forms', `${form}.ejs`);
+    const data = {
+        courses: courses
+    };
 
     try {
         const fileContent = await fs.readFile(filePath, 'utf-8');
-        res.status(200).send({ html: fileContent });
+        const form = ejs.render(fileContent, data);
+        res.status(200).send({ html: form });
     } catch (error) {
         console.error('Error reading file:', error);
         res.status(500).send({ message: 'Internal Server Error', type: 'error' });
@@ -688,8 +693,8 @@ const getPDF = async (req, res) => {
         const halfPath = (type == 'preview') ?
             path.resolve('temp', file) :
             (type == 'certificate') ?
-            path.resolve('uploads', 'certificates', file) :
-            path.resolve('uploads', 'resources', file);
+                path.resolve('uploads', 'certificates', file) :
+                path.resolve('uploads', 'resources', file);
 
         const filePath = path.resolve(__dirname, '..', halfPath);
 

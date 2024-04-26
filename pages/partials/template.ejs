@@ -71,6 +71,7 @@
 
     }
 
+    .owner,
     .reviewer,
     .task {
         text-transform: capitalize;
@@ -97,7 +98,7 @@
             <h1>buhrec</h1>
         </div>
         <h1 class="heading">Certificate of Completion</h1>
-        <p class="desc">This is to certify that <%= owner %> has successfully completed the project <span class="task">"<%= task %>"</span>.</p>
+        <p class="desc">This is to certify that <spam class="owner">"<%= owner %>"</spam> has successfully completed the project <span class="task">"<%= task %>"</span>.</p>
         <p>Reviewed by: <span class="reviewer"><%= reviewer %></span>
         </p>
         <div class="sign">

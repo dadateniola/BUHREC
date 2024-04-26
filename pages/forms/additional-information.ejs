@@ -16,8 +16,8 @@
         <label for="course">course speciality</label>
         <select id="course" name="course">
             <option value="">Select a course</option>
-            <% data.courses.forEach(course => { %>
-                <option value=<%= course %>><%= course %></option>
+            <% courses.forEach(course=> { %>
+                <option value=<%=course %>><%= course.split("_").join(" ") %></option>
             <% }) %>
         </select>
     </div>
